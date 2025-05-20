@@ -29,14 +29,10 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: Format check
-        run: |
-          cd $(find . -name "Cargo.toml" -not -path "*/target/*" | head -1 | xargs dirname)
-          cargo fmt --check
+        run: cargo fmt --check
 
       - name: Clippy
-        run: |
-          cd $(find . -name "Cargo.toml" -not -path "*/target/*" | head -1 | xargs dirname)
-          cargo clippy --all-features --all-targets -- -D warnings
+        run: cargo clippy --all-features --all-targets -- -D warnings
 
   test:
     name: Test
@@ -62,6 +58,4 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: Run tests
-        run: |
-          cd $(find . -name "Cargo.toml" -not -path "*/target/*" | head -1 | xargs dirname)
-          cargo test --all-features
+        run: cargo test --all-features

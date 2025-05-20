@@ -1,10 +1,10 @@
 [package]
 name = "orbiton"
-version.workspace = true
-edition.workspace = true
-authors.workspace = true
-license.workspace = true
-repository.workspace = true
+version = "0.1.0"
+edition = "2021"
+authors = ["Orbit Team <orbit@example.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/orbitrs/orbit"
 readme = "README.md"
 description = "CLI tooling for the Orbit UI framework ecosystem"
 
@@ -22,16 +22,16 @@ notify = "6.1.1"
 
 # Template management
 liquid = "0.26.4"
-serde.workspace = true
-serde_json.workspace = true
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 serde_yaml = "0.9.27"
 
 # Filesystem operations
 walkdir = "2.4.0"
 
 # Error handling
-thiserror.workspace = true
-log.workspace = true
+thiserror = "1.0"
+log = "0.4"
 env_logger = "0.10.1"
 anyhow = "1.0.75"
 
