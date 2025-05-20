@@ -11,34 +11,35 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
-      - name: Create workspace
-        run: mkdir -p /home/runner/work/orbitrs
+      - name: Checkout orbiton
+        uses: actions/checkout@v4
+        with:
+          path: orbiton
+          fetch-depth: 1
 
       - name: Checkout orbit
         uses: actions/checkout@v4
         with:
           repository: orbitrs/orbit
-          path: /home/runner/work/orbitrs/orbit
+          path: orbit
           fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout orbit-analyzer
         uses: actions/checkout@v4
         with:
           repository: orbitrs/orbit-analyzer
-          path: /home/runner/work/orbitrs/orbit-analyzer
+          path: orbit-analyzer
           fetch-depth: 1
-
-      - name: Checkout orbiton
-        uses: actions/checkout@v4
-        with:
-          path: /home/runner/work/orbitrs/orbiton
-          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup workspace for dependencies
         run: |
-          cd /home/runner/work/orbitrs
+          echo "Current directory structure:"
+          pwd
+          ls -la
           
-          # Create a workspace Cargo.toml
+          # Create a workspace Cargo.toml at the root of the checkout directory
           cat > Cargo.toml << 'EOF'
           [workspace]
           members = [
@@ -63,11 +64,16 @@ jobs:
 
           # Update orbiton's Cargo.toml to use local paths
           cd orbiton
-          sed -i 's|orbit = { git = "https://github.com/orbitrs/orbit.git" }|orbit = { path = "../orbit" }|' Cargo.toml
-          sed -i 's|orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git" }|orbit-analyzer = { path = "../orbit-analyzer" }|' Cargo.toml
+          sed -i 's|orbit = { git = "https://github.com/orbitrs/orbit.git" }|orbit = { path = "../orbit" }|' Cargo.toml || echo "Failed to update orbit dependency"
+          sed -i 's|orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git" }|orbit-analyzer = { path = "../orbit-analyzer" }|' Cargo.toml || echo "Failed to update orbit-analyzer dependency"
           
           # Show workspace structure
+          echo "Workspace Cargo.toml files:"
           find . -name "Cargo.toml" | sort
+          
+          # Show dependencies in orbiton's Cargo.toml
+          echo "Orbiton dependencies:"
+          grep -A 10 "dependencies" orbiton/Cargo.toml
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -79,50 +85,51 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: |
-            /home/runner/work/orbitrs/orbiton -> target
+            . -> target
 
       - name: Format check
         run: |
-          cd /home/runner/work/orbitrs/orbiton
+          cd orbiton
           cargo fmt --check
 
       - name: Clippy
         run: |
-          cd /home/runner/work/orbitrs/orbiton
+          cd orbiton
           cargo clippy --all-features --all-targets -- -D warnings
 
   test:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - name: Create workspace
-        run: mkdir -p /home/runner/work/orbitrs
+      - name: Checkout orbiton
+        uses: actions/checkout@v4
+        with:
+          path: orbiton
+          fetch-depth: 1
 
       - name: Checkout orbit
         uses: actions/checkout@v4
         with:
           repository: orbitrs/orbit
-          path: /home/runner/work/orbitrs/orbit
+          path: orbit
           fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout orbit-analyzer
         uses: actions/checkout@v4
         with:
           repository: orbitrs/orbit-analyzer
-          path: /home/runner/work/orbitrs/orbit-analyzer
+          path: orbit-analyzer
           fetch-depth: 1
-
-      - name: Checkout orbiton
-        uses: actions/checkout@v4
-        with:
-          path: /home/runner/work/orbitrs/orbiton
-          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup workspace for dependencies
         run: |
-          cd /home/runner/work/orbitrs
+          echo "Current directory structure:"
+          pwd
+          ls -la
           
-          # Create a workspace Cargo.toml
+          # Create a workspace Cargo.toml at the root of the checkout directory
           cat > Cargo.toml << 'EOF'
           [workspace]
           members = [
@@ -147,11 +154,16 @@ jobs:
 
           # Update orbiton's Cargo.toml to use local paths
           cd orbiton
-          sed -i 's|orbit = { git = "https://github.com/orbitrs/orbit.git" }|orbit = { path = "../orbit" }|' Cargo.toml
-          sed -i 's|orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git" }|orbit-analyzer = { path = "../orbit-analyzer" }|' Cargo.toml
+          sed -i 's|orbit = { git = "https://github.com/orbitrs/orbit.git" }|orbit = { path = "../orbit" }|' Cargo.toml || echo "Failed to update orbit dependency"
+          sed -i 's|orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git" }|orbit-analyzer = { path = "../orbit-analyzer" }|' Cargo.toml || echo "Failed to update orbit-analyzer dependency"
           
           # Show workspace structure
+          echo "Workspace Cargo.toml files:"
           find . -name "Cargo.toml" | sort
+          
+          # Show dependencies in orbiton's Cargo.toml
+          echo "Orbiton dependencies:"
+          grep -A 10 "dependencies" orbiton/Cargo.toml
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -162,9 +174,9 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: |
-            /home/runner/work/orbitrs/orbiton -> target
+            . -> target
 
       - name: Run tests
         run: |
-          cd /home/runner/work/orbitrs/orbiton
+          cd orbiton
           cargo test --all-features
