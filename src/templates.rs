@@ -15,7 +15,7 @@ pub fn get_template(name: &str) -> Result<HashMap<String, String>, String> {
 /// Basic template for a simple Orbit project
 fn basic_template() -> HashMap<String, String> {
     let mut template = HashMap::new();
-    
+
     // Cargo.toml
     template.insert(
         "Cargo.toml".to_string(),
@@ -30,9 +30,10 @@ orbit = "{{ project.orbit_version }}"
 
 [build-dependencies]
 orbiton = "{{ project.orbiton_version }}"
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     // Main lib.rs
     template.insert(
         "src/lib.rs".to_string(),
@@ -49,9 +50,10 @@ pub fn init() -> Result<(), orbit::Error> {
     
     Ok(())
 }
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     // Entry point
     template.insert(
         "src/main.rs".to_string(),
@@ -66,18 +68,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     // Components module
     template.insert(
         "src/components/mod.rs".to_string(),
         r#"// Components for {{ project.project_name }}
 
 pub mod counter;
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     // Sample component
     template.insert(
         "src/components/counter.orbit".to_string(),
@@ -145,9 +149,10 @@ impl Counter {
     }
 }
 </script>
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     // README.md
     template.insert(
         "README.md".to_string(),
@@ -166,9 +171,10 @@ orbiton dev
 ```bash
 orbiton build
 ```
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     // orbit.config.json
     template.insert(
         "orbit.config.json".to_string(),
@@ -176,16 +182,17 @@ orbiton build
   "renderer": "auto",
   "target": "web"
 }
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     template
 }
 
 /// Component library template
 fn component_library_template() -> HashMap<String, String> {
     let mut template = basic_template();
-    
+
     // Override Cargo.toml for a component library
     template.insert(
         "Cargo.toml".to_string(),
@@ -206,9 +213,10 @@ orbiton = "{{ project.orbiton_version }}"
 [lib]
 name = "{{ project.project_name }}"
 path = "src/lib.rs"
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     // Add more components
     template.insert(
         "src/components/mod.rs".to_string(),
@@ -218,9 +226,10 @@ pub mod button;
 pub mod card;
 pub mod counter;
 pub mod input;
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     // Add button component
     template.insert(
         "src/components/button.orbit".to_string(),
@@ -313,16 +322,17 @@ impl Button {
     }
 }
 </script>
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     template
 }
 
 /// Full application template
 fn full_app_template() -> HashMap<String, String> {
     let mut template = basic_template();
-    
+
     // Override main.rs for a full application
     template.insert(
         "src/main.rs".to_string(),
@@ -354,9 +364,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     Ok(())
 }
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     // Add app component
     template.insert(
         "src/components/app.orbit".to_string(),
@@ -426,9 +437,10 @@ impl Component for App {
     }
 }
 </script>
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     // Update components module
     template.insert(
         "src/components/mod.rs".to_string(),
@@ -436,8 +448,9 @@ impl Component for App {
 
 pub mod app;
 pub mod counter;
-"#.to_string(),
+"#
+        .to_string(),
     );
-    
+
     template
 }

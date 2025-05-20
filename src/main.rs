@@ -2,12 +2,12 @@
 
 use clap::{Parser, Subcommand};
 use console::style;
-use log::{info, error};
+use log::info;
 
 mod commands;
+mod dev_server;
 mod templates;
 mod utils;
-mod dev_server;
 
 /// Version of the orbiton CLI
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -30,13 +30,13 @@ struct Cli {
 enum Commands {
     /// Create a new Orbit project
     New(commands::new::NewArgs),
-    
+
     /// Start the development server
     Dev(commands::dev::DevArgs),
-    
+
     /// Build the project
     Build(commands::build::BuildArgs),
-    
+
     /// Configure the renderer
     Renderer(commands::renderer::RendererArgs),
 }
@@ -44,19 +44,17 @@ enum Commands {
 fn main() -> anyhow::Result<()> {
     // Parse the command line arguments
     let cli = Cli::parse();
-    
+
     // Initialize logging
     if cli.verbose {
-        env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug"))
-            .init();
+        env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
     } else {
-        env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info"))
-            .init();
+        env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
     }
-    
+
     // Print welcome message
     println!("{} v{}", style("orbiton").bold().green(), VERSION);
-    
+
     // Execute the appropriate command
     match cli.command {
         Commands::New(args) => {
@@ -72,7 +70,7 @@ fn main() -> anyhow::Result<()> {
             commands::renderer::execute(args)?;
         }
     }
-    
+
     info!("Command completed successfully");
     Ok(())
 }

@@ -40,6 +40,10 @@ reqwest = { version = "0.11", features = ["json", "blocking"] }
 tiny_http = "0.12.0"
 websocket = "0.26.5"
 
+# Process handling
+ctrlc = "3.4.1"
+open = "5.0.0"
+
 [[bin]]
 name = "orbiton"
 path = "src/main.rs"
