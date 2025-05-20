@@ -62,18 +62,33 @@ jobs:
           log = "0.4"
           EOF
 
+          # Check if Cargo.toml exists in each repository
+          echo "Checking if Cargo.toml files exist:"
+          [ -f "orbiton/Cargo.toml" ] && echo "orbiton/Cargo.toml exists" || echo "orbiton/Cargo.toml does not exist"
+          [ -f "orbit/Cargo.toml" ] && echo "orbit/Cargo.toml exists" || echo "orbit/Cargo.toml does not exist"
+          [ -f "orbit-analyzer/Cargo.toml" ] && echo "orbit-analyzer/Cargo.toml exists" || echo "orbit-analyzer/Cargo.toml does not exist"
+          
           # Update orbiton's Cargo.toml to use local paths
-          cd orbiton
-          sed -i 's|orbit = { git = "https://github.com/orbitrs/orbit.git" }|orbit = { path = "../orbit" }|' Cargo.toml || echo "Failed to update orbit dependency"
-          sed -i 's|orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git" }|orbit-analyzer = { path = "../orbit-analyzer" }|' Cargo.toml || echo "Failed to update orbit-analyzer dependency"
+          if [ -f "orbiton/Cargo.toml" ]; then
+            echo "Updating orbiton dependencies to use local paths"
+            sed -i 's|orbit = { git = "https://github.com/orbitrs/orbit.git" }|orbit = { path = "../orbit" }|' orbiton/Cargo.toml || echo "Failed to update orbit dependency"
+            sed -i 's|orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git" }|orbit-analyzer = { path = "../orbit-analyzer" }|' orbiton/Cargo.toml || echo "Failed to update orbit-analyzer dependency"
+          else
+            echo "ERROR: orbiton/Cargo.toml does not exist, cannot update dependencies"
+            ls -la orbiton/
+          fi
           
           # Show workspace structure
           echo "Workspace Cargo.toml files:"
           find . -name "Cargo.toml" | sort
           
-          # Show dependencies in orbiton's Cargo.toml
-          echo "Orbiton dependencies:"
-          grep -A 10 "dependencies" orbiton/Cargo.toml
+          # Show dependencies in orbiton's Cargo.toml if it exists
+          if [ -f "orbiton/Cargo.toml" ]; then
+            echo "Orbiton dependencies:"
+            grep -A 10 "dependencies" orbiton/Cargo.toml
+          else
+            echo "Cannot show dependencies, orbiton/Cargo.toml does not exist"
+          fi
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -89,13 +104,29 @@ jobs:
 
       - name: Format check
         run: |
-          cd orbiton
-          cargo fmt --check
+          # Check if orbiton directory exists before attempting to access it
+          if [ -d "orbiton" ]; then
+            cd orbiton
+            cargo fmt --check
+          else
+            echo "ERROR: orbiton directory does not exist"
+            pwd
+            ls -la
+            exit 1
+          fi
 
       - name: Clippy
         run: |
-          cd orbiton
-          cargo clippy --all-features --all-targets -- -D warnings
+          # Check if orbiton directory exists before attempting to access it
+          if [ -d "orbiton" ]; then
+            cd orbiton
+            cargo clippy --all-features --all-targets -- -D warnings
+          else
+            echo "ERROR: orbiton directory does not exist"
+            pwd
+            ls -la
+            exit 1
+          fi
 
   test:
     name: Test
@@ -152,18 +183,33 @@ jobs:
           log = "0.4"
           EOF
 
+          # Check if Cargo.toml exists in each repository
+          echo "Checking if Cargo.toml files exist:"
+          [ -f "orbiton/Cargo.toml" ] && echo "orbiton/Cargo.toml exists" || echo "orbiton/Cargo.toml does not exist"
+          [ -f "orbit/Cargo.toml" ] && echo "orbit/Cargo.toml exists" || echo "orbit/Cargo.toml does not exist"
+          [ -f "orbit-analyzer/Cargo.toml" ] && echo "orbit-analyzer/Cargo.toml exists" || echo "orbit-analyzer/Cargo.toml does not exist"
+          
           # Update orbiton's Cargo.toml to use local paths
-          cd orbiton
-          sed -i 's|orbit = { git = "https://github.com/orbitrs/orbit.git" }|orbit = { path = "../orbit" }|' Cargo.toml || echo "Failed to update orbit dependency"
-          sed -i 's|orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git" }|orbit-analyzer = { path = "../orbit-analyzer" }|' Cargo.toml || echo "Failed to update orbit-analyzer dependency"
+          if [ -f "orbiton/Cargo.toml" ]; then
+            echo "Updating orbiton dependencies to use local paths"
+            sed -i 's|orbit = { git = "https://github.com/orbitrs/orbit.git" }|orbit = { path = "../orbit" }|' orbiton/Cargo.toml || echo "Failed to update orbit dependency"
+            sed -i 's|orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git" }|orbit-analyzer = { path = "../orbit-analyzer" }|' orbiton/Cargo.toml || echo "Failed to update orbit-analyzer dependency"
+          else
+            echo "ERROR: orbiton/Cargo.toml does not exist, cannot update dependencies"
+            ls -la orbiton/
+          fi
           
           # Show workspace structure
           echo "Workspace Cargo.toml files:"
           find . -name "Cargo.toml" | sort
           
-          # Show dependencies in orbiton's Cargo.toml
-          echo "Orbiton dependencies:"
-          grep -A 10 "dependencies" orbiton/Cargo.toml
+          # Show dependencies in orbiton's Cargo.toml if it exists
+          if [ -f "orbiton/Cargo.toml" ]; then
+            echo "Orbiton dependencies:"
+            grep -A 10 "dependencies" orbiton/Cargo.toml
+          else
+            echo "Cannot show dependencies, orbiton/Cargo.toml does not exist"
+          fi
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -178,5 +224,13 @@ jobs:
 
       - name: Run tests
         run: |
-          cd orbiton
-          cargo test --all-features
+          # Check if orbiton directory exists before attempting to access it
+          if [ -d "orbiton" ]; then
+            cd orbiton
+            cargo test --all-features
+          else
+            echo "ERROR: orbiton directory does not exist"
+            pwd
+            ls -la
+            exit 1
+          fi
