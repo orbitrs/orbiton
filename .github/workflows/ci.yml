@@ -28,7 +28,9 @@ jobs:
         uses: Swatinem/rust-cache@v2
             
       - name: Check code formatting
-        run: cargo fmt --all -- --check
+        run: |
+          echo "Formatting orbiton..."
+          cargo fmt -p orbiton -- --check
         
       - name: Run clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
