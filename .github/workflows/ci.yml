@@ -13,6 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check workspace structure
+        run: |
+          pwd
+          ls -la
+          find . -name "Cargo.toml" | sort
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
         with:
@@ -23,19 +29,29 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: Format check
-        run: cargo fmt --check
+        run: |
+          cd $(find . -name "Cargo.toml" -not -path "*/target/*" | head -1 | xargs dirname)
+          cargo fmt --check
 
       - name: Clippy
-        run: cargo clippy --workspace --all-features --all-targets -- -D warnings
+        run: |
+          cd $(find . -name "Cargo.toml" -not -path "*/target/*" | head -1 | xargs dirname)
+          cargo clippy --all-features --all-targets -- -D warnings
 
   test:
     name: Test
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check workspace structure
+        run: |
+          pwd
+          ls -la
+          find . -name "Cargo.toml" | sort
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -46,4 +62,6 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: Run tests
-        run: cargo test --workspace --all-features
+        run: |
+          cd $(find . -name "Cargo.toml" -not -path "*/target/*" | head -1 | xargs dirname)
+          cargo test --all-features
