@@ -1,0 +1,45 @@
+[package]
+name = "orbiton"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+description = "CLI tooling for the Orbit UI framework ecosystem"
+
+[dependencies]
+# Core dependencies
+orbit = { path = "../orbit" }
+orbit-analyzer = { path = "../orbit-analyzer" }
+
+# CLI libraries
+clap = { version = "4.4", features = ["derive"] }
+dialoguer = "0.11.0"
+console = "0.15.7"
+indicatif = "0.17.6"
+notify = "6.1.1"
+
+# Template management
+liquid = "0.26.4"
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml = "0.9.27"
+
+# Filesystem operations
+walkdir = "2.4.0"
+
+# Error handling
+thiserror.workspace = true
+log.workspace = true
+env_logger = "0.10.1"
+anyhow = "1.0.75"
+
+# HTTP and networking
+reqwest = { version = "0.11", features = ["json", "blocking"] }
+tiny_http = "0.12.0"
+websocket = "0.26.5"
+
+[[bin]]
+name = "orbiton"
+path = "src/main.rs"
