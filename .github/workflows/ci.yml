@@ -3,487 +3,73 @@ name: CI
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
 
 jobs:
   check:
     name: Check
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout orbiton
-        uses: actions/checkout@v4
-        with:
-          path: orbiton
-          fetch-depth: 1
-
-      - name: Checkout orbit
-        uses: actions/checkout@v4
-        with:
-          repository: orbitrs/orbit
-          path: orbit
-          fetch-depth: 1
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout orbit-analyzer
-        uses: actions/checkout@v4
-        with:
-          repository: orbitrs/orbit-analyzer
-          path: orbit-analyzer
-          fetch-depth: 1
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup workspace for dependencies
-        run: |
-          echo "Current directory structure:"
-          pwd
-          ls -la
-          
-          # Create a workspace Cargo.toml at the root of the checkout directory
-          cat > Cargo.toml << 'EOF'
-          [workspace]
-          members = [
-              "orbit",
-              "orbit-analyzer",
-              "orbiton",
-          ]
-
-          [workspace.package]
-          version = "0.1.0"
-          edition = "2021"
-          authors = ["Orbit Team <orbit@example.com>"]
-          license = "MIT OR Apache-2.0"
-          repository = "https://github.com/orbitrs/orbit"
-
-          [workspace.dependencies]
-          # Common dependencies
-          serde = { version = "1.0", features = ["derive"] }
-          serde_json = "1.0"
-          thiserror = "1.0"
-          log = "0.4"
-          
-          # Async runtime
-          tokio = { version = "1.34.0", features = ["full"] }
-          
-          # WASM support
-          wasm-bindgen = "0.2.89"
-          
-          # Additional common dependencies
-          anyhow = "1.0.75"
-          clap = { version = "4.4", features = ["derive"] }
-          futures = "0.3.28"
-          async-trait = "0.1.74"
-          regex = "1.10.2"
-          chrono = { version = "0.4.31", features = ["serde"] }
-          url = "2.5.0"
-          reqwest = { version = "0.11", features = ["json"] }
-          EOF
-
-          # Check if Cargo.toml exists in each repository
-          echo "Checking if Cargo.toml files exist:"
-          [ -f "orbiton/Cargo.toml" ] && echo "orbiton/Cargo.toml exists" || echo "orbiton/Cargo.toml does not exist"
-          [ -f "orbit/Cargo.toml" ] && echo "orbit/Cargo.toml exists" || echo "orbit/Cargo.toml does not exist"
-          [ -f "orbit-analyzer/Cargo.toml" ] && echo "orbit-analyzer/Cargo.toml exists" || echo "orbit-analyzer/Cargo.toml does not exist"
-          
-          # Print the first 20 lines of each Cargo.toml for debugging
-          echo "Contents of orbit/Cargo.toml (first 20 lines):"
-          if [ -f "orbit/Cargo.toml" ]; then
-            head -n 20 orbit/Cargo.toml
-          else 
-            echo "File does not exist"
-          fi
-          
-          echo "Contents of orbit-analyzer/Cargo.toml (first 20 lines):"
-          if [ -f "orbit-analyzer/Cargo.toml" ]; then
-            head -n 20 orbit-analyzer/Cargo.toml
-          else 
-            echo "File does not exist"
-          fi
-          
-          echo "Contents of orbiton/Cargo.toml (first 20 lines):"
-          if [ -f "orbiton/Cargo.toml" ]; then
-            head -n 20 orbiton/Cargo.toml
-          else 
-            echo "File does not exist"
-          fi
-          
-          # Fix module ambiguity issue by checking if both parser.rs and parser/mod.rs exist
-          if [ -f "orbit/src/parser.rs" ] && [ -f "orbit/src/parser/mod.rs" ]; then
-            echo "Found both parser.rs and parser/mod.rs. Renaming parser.rs to parser_legacy.rs..."
-            mv orbit/src/parser.rs orbit/src/parser_legacy.rs
-            echo "Renamed parser.rs to parser_legacy.rs to avoid module ambiguity"
-          fi
-          
-          # If renderer.rs has any brace issues, replace it with a corrected version
-          if grep -q "unexpected closing delimiter: \`\}\`" orbit/src/renderer.rs 2>/dev/null; then
-            echo "Found syntax errors in renderer.rs. Creating backup and replacing with fixed version..."
-            cp orbit/src/renderer.rs orbit/src/renderer.rs.bak
-            
-            # This would replace the file with a fixed version from the repository
-            # For now, we'll just clean up any obvious syntax errors with a basic fix
-            sed -i 's/}}/}/g' orbit/src/renderer.rs
-            echo "Fixed syntax errors in renderer.rs"
-          fi
-          
-          # Update orbiton's Cargo.toml to use local paths
-          if [ -f "orbiton/Cargo.toml" ]; then
-            echo "Updating orbiton dependencies to use local paths"
-            sed -i 's|orbit = { git = "https://github.com/orbitrs/orbit.git" }|orbit = { path = "../orbit" }|' orbiton/Cargo.toml || echo "Failed to update orbit dependency"
-            sed -i 's|orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git" }|orbit-analyzer = { path = "../orbit-analyzer" }|' orbiton/Cargo.toml || echo "Failed to update orbit-analyzer dependency"
-          else
-            echo "ERROR: orbiton/Cargo.toml does not exist, cannot update dependencies"
-            ls -la orbiton/
-          fi
-          
-          # Since we might have workspace inheritance issues, let's also update orbit's Cargo.toml to eliminate workspace references
-          if [ -f "orbit/Cargo.toml" ]; then
-            echo "Updating orbit Cargo.toml to remove workspace inheritance"
-            sed -i 's/version.workspace = true/version = "0.1.0"/' orbit/Cargo.toml || echo "Failed to update version"
-            sed -i 's/edition.workspace = true/edition = "2021"/' orbit/Cargo.toml || echo "Failed to update edition"
-            sed -i 's/authors.workspace = true/authors = ["Orbit Team <orbit@example.com>"]/' orbit/Cargo.toml || echo "Failed to update authors"
-            sed -i 's/license.workspace = true/license = "MIT OR Apache-2.0"/' orbit/Cargo.toml || echo "Failed to update license"
-            sed -i 's/repository.workspace = true/repository = "https://github.com\/orbitrs\/orbit"/' orbit/Cargo.toml || echo "Failed to update repository"
-            sed -i 's/tokio.workspace = true/tokio = { version = "1.34.0", features = ["full"] }/' orbit/Cargo.toml || echo "Failed to update tokio"
-            sed -i 's/wasm-bindgen.workspace = true/wasm-bindgen = "0.2.89"/' orbit/Cargo.toml || echo "Failed to update wasm-bindgen"
-            sed -i 's/thiserror.workspace = true/thiserror = "1.0"/' orbit/Cargo.toml || echo "Failed to update thiserror"
-            sed -i 's/log.workspace = true/log = "0.4"/' orbit/Cargo.toml || echo "Failed to update log"
-            sed -i 's/serde.workspace = true/serde = { version = "1.0", features = ["derive"] }/' orbit/Cargo.toml || echo "Failed to update serde"
-            sed -i 's/serde_json.workspace = true/serde_json = "1.0"/' orbit/Cargo.toml || echo "Failed to update serde_json"
-          fi
-          
-          # Similarly for orbit-analyzer
-          if [ -f "orbit-analyzer/Cargo.toml" ]; then
-            echo "Updating orbit-analyzer Cargo.toml to remove workspace inheritance"
-            sed -i 's/version.workspace = true/version = "0.1.0"/' orbit-analyzer/Cargo.toml || echo "Failed to update version"
-            sed -i 's/edition.workspace = true/edition = "2021"/' orbit-analyzer/Cargo.toml || echo "Failed to update edition"
-            sed -i 's/authors.workspace = true/authors = ["Orbit Team <orbit@example.com>"]/' orbit-analyzer/Cargo.toml || echo "Failed to update authors"
-            sed -i 's/license.workspace = true/license = "MIT OR Apache-2.0"/' orbit-analyzer/Cargo.toml || echo "Failed to update license"
-            sed -i 's/repository.workspace = true/repository = "https://github.com\/orbitrs\/orbit"/' orbit-analyzer/Cargo.toml || echo "Failed to update repository"
-            sed -i 's/tokio.workspace = true/tokio = { version = "1.34.0", features = ["full"] }/' orbit-analyzer/Cargo.toml || echo "Failed to update tokio"
-            sed -i 's/wasm-bindgen.workspace = true/wasm-bindgen = "0.2.89"/' orbit-analyzer/Cargo.toml || echo "Failed to update wasm-bindgen"
-            sed -i 's/thiserror.workspace = true/thiserror = "1.0"/' orbit-analyzer/Cargo.toml || echo "Failed to update thiserror"
-            sed -i 's/log.workspace = true/log = "0.4"/' orbit-analyzer/Cargo.toml || echo "Failed to update log"
-            sed -i 's/serde.workspace = true/serde = { version = "1.0", features = ["derive"] }/' orbit-analyzer/Cargo.toml || echo "Failed to update serde"
-            sed -i 's/serde_json.workspace = true/serde_json = "1.0"/' orbit-analyzer/Cargo.toml || echo "Failed to update serde_json"
-          fi
-          
-          # Show workspace structure
-          echo "Workspace Cargo.toml files after updates:"
-          find . -name "Cargo.toml" | sort
-          
-          # Show dependencies in updated Cargo.toml files
-          if [ -f "orbiton/Cargo.toml" ]; then
-            echo "Orbiton dependencies:"
-            grep -A 10 "dependencies" orbiton/Cargo.toml
-          fi
-          
-          if [ -f "orbit/Cargo.toml" ]; then
-            echo "Orbit dependencies:"
-            grep -A 10 "dependencies" orbit/Cargo.toml
-          fi
-          
-          if [ -f "orbit-analyzer/Cargo.toml" ]; then
-            echo "Orbit-analyzer dependencies:"
-            grep -A 10 "dependencies" orbit-analyzer/Cargo.toml
-          fi
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-          components: rustfmt, clippy
-
-      - name: Cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: |
-            . -> target
-
-      - name: Format check
-        run: |
-          # Check if orbiton directory exists before attempting to access it
-          if [ -d "orbiton" ]; then
-            cd orbiton
-            cargo fmt --check
-          else
-            echo "ERROR: orbiton directory does not exist"
-            pwd
-            ls -la
-            exit 1
-          fi
-          
-      - name: Verify module structure
-        run: |
-          echo "Checking orbit source file structure..."
-          # This step helps identify module naming conflicts early
-          if [ -d "orbit/src" ]; then
-            echo "Files in orbit/src:"
-            find orbit/src -type f -name "*.rs" | sort
-            
-            echo "Directories in orbit/src:"
-            find orbit/src -type d | sort
-            
-            # Check for module ambiguity issues
-            ambiguous_modules=0
-            for dir in $(find orbit/src -type d | grep -v "/src$"); do
-              basename=$(basename "$dir")
-              parent_dir=$(dirname "$dir")
-              if [ -f "$parent_dir/$basename.rs" ] && [ -f "$dir/mod.rs" ]; then
-                echo "Warning: Module ambiguity detected. Both $parent_dir/$basename.rs and $dir/mod.rs exist."
-                ambiguous_modules=$((ambiguous_modules + 1))
-              fi
-            done
-            
-            if [ $ambiguous_modules -gt 0 ]; then
-              echo "Warning: $ambiguous_modules ambiguous modules detected. This may cause compiler errors."
-              # We don't fail the build here since we've already applied fixes
-            else
-              echo "No module ambiguity issues detected."
-            fi
-          else
-            echo "orbit/src directory not found"
-          fi
-
-      - name: Clippy
-        run: |
-          # Check if orbiton directory exists before attempting to access it
-          if [ -d "orbiton" ]; then
-            cd orbiton
-            cargo clippy --all-features --all-targets -- -D warnings
-          else
-            echo "ERROR: orbiton directory does not exist"
-            pwd
-            ls -la
-            exit 1
-          fi
+      - uses: actions/checkout@v4
       
-      - name: Validate problematic files
-        run: |
-          echo "Validating renderer.rs file..."
-          if [ -f "orbit/src/renderer.rs" ]; then
-            # Use rustc to validate the syntax of the file
-            echo "Validating orbit/src/renderer.rs with rustc..."
-            rustc --crate-type=lib --emit=dep-info -o /dev/null orbit/src/renderer.rs
-            if [ $? -eq 0 ]; then
-              echo "✅ renderer.rs is valid Rust syntax"
-            else
-              echo "❌ renderer.rs is still invalid Rust syntax"
-              exit 1
-            fi
-          else
-            echo "orbit/src/renderer.rs file not found"
-          fi
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
           
-          # Validate the module structure
-          if [ -f "orbit/src/parser_legacy.rs" ] && [ -f "orbit/src/parser/mod.rs" ]; then
-            echo "✅ Module ambiguity is resolved: parser.rs has been renamed to parser_legacy.rs"
-          else
-            if [ -f "orbit/src/parser.rs" ] && [ -f "orbit/src/parser/mod.rs" ]; then
-              echo "❌ Module ambiguity still exists between parser.rs and parser/mod.rs"
-              exit 1
-            fi
-          fi
-
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+            
+      - name: Check code formatting
+        run: cargo fmt --all -- --check
+        
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+        
   test:
     name: Test
     runs-on: ubuntu-latest
+    needs: check
     steps:
-      - name: Checkout orbiton
-        uses: actions/checkout@v4
-        with:
-          path: orbiton
-          fetch-depth: 1
-
-      - name: Checkout orbit
-        uses: actions/checkout@v4
-        with:
-          repository: orbitrs/orbit
-          path: orbit
-          fetch-depth: 1
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout orbit-analyzer
-        uses: actions/checkout@v4
-        with:
-          repository: orbitrs/orbit-analyzer
-          path: orbit-analyzer
-          fetch-depth: 1
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup workspace for dependencies
-        run: |
-          echo "Current directory structure:"
-          pwd
-          ls -la
-          
-          # Create a workspace Cargo.toml at the root of the checkout directory
-          cat > Cargo.toml << 'EOF'
-          [workspace]
-          members = [
-              "orbit",
-              "orbit-analyzer",
-              "orbiton",
-          ]
-
-          [workspace.package]
-          version = "0.1.0"
-          edition = "2021"
-          authors = ["Orbit Team <orbit@example.com>"]
-          license = "MIT OR Apache-2.0"
-          repository = "https://github.com/orbitrs/orbit"
-
-          [workspace.dependencies]
-          # Common dependencies
-          serde = { version = "1.0", features = ["derive"] }
-          serde_json = "1.0"
-          thiserror = "1.0"
-          log = "0.4"
-          
-          # Async runtime
-          tokio = { version = "1.34.0", features = ["full"] }
-          
-          # WASM support
-          wasm-bindgen = "0.2.89"
-          
-          # Additional common dependencies
-          anyhow = "1.0.75"
-          clap = { version = "4.4", features = ["derive"] }
-          futures = "0.3.28"
-          async-trait = "0.1.74"
-          regex = "1.10.2"
-          chrono = { version = "0.4.31", features = ["serde"] }
-          url = "2.5.0"
-          reqwest = { version = "0.11", features = ["json"] }
-          EOF
-
-          # Check if Cargo.toml exists in each repository
-          echo "Checking if Cargo.toml files exist:"
-          [ -f "orbiton/Cargo.toml" ] && echo "orbiton/Cargo.toml exists" || echo "orbiton/Cargo.toml does not exist"
-          [ -f "orbit/Cargo.toml" ] && echo "orbit/Cargo.toml exists" || echo "orbit/Cargo.toml does not exist"
-          [ -f "orbit-analyzer/Cargo.toml" ] && echo "orbit-analyzer/Cargo.toml exists" || echo "orbit-analyzer/Cargo.toml does not exist"
-          
-          # Print the first 20 lines of each Cargo.toml for debugging
-          echo "Contents of orbit/Cargo.toml (first 20 lines):"
-          if [ -f "orbit/Cargo.toml" ]; then
-            head -n 20 orbit/Cargo.toml
-          else 
-            echo "File does not exist"
-          fi
-          
-          echo "Contents of orbit-analyzer/Cargo.toml (first 20 lines):"
-          if [ -f "orbit-analyzer/Cargo.toml" ]; then
-            head -n 20 orbit-analyzer/Cargo.toml
-          else 
-            echo "File does not exist"
-          fi
-          
-          echo "Contents of orbiton/Cargo.toml (first 20 lines):"
-          if [ -f "orbiton/Cargo.toml" ]; then
-            head -n 20 orbiton/Cargo.toml
-          else 
-            echo "File does not exist"
-          fi
-          
-          # Fix module ambiguity issue by checking if both parser.rs and parser/mod.rs exist
-          if [ -f "orbit/src/parser.rs" ] && [ -f "orbit/src/parser/mod.rs" ]; then
-            echo "Found both parser.rs and parser/mod.rs. Renaming parser.rs to parser_legacy.rs..."
-            mv orbit/src/parser.rs orbit/src/parser_legacy.rs
-            echo "Renamed parser.rs to parser_legacy.rs to avoid module ambiguity"
-          fi
-          
-          # If renderer.rs has any brace issues, replace it with a corrected version
-          if grep -q "unexpected closing delimiter: \`\}\`" orbit/src/renderer.rs 2>/dev/null; then
-            echo "Found syntax errors in renderer.rs. Creating backup and replacing with fixed version..."
-            cp orbit/src/renderer.rs orbit/src/renderer.rs.bak
-            
-            # This would replace the file with a fixed version from the repository
-            # For now, we'll just clean up any obvious syntax errors with a basic fix
-            sed -i 's/}}/}/g' orbit/src/renderer.rs
-            echo "Fixed syntax errors in renderer.rs"
-          fi
-          
-          # Update orbiton's Cargo.toml to use local paths
-          if [ -f "orbiton/Cargo.toml" ]; then
-            echo "Updating orbiton dependencies to use local paths"
-            sed -i 's|orbit = { git = "https://github.com/orbitrs/orbit.git" }|orbit = { path = "../orbit" }|' orbiton/Cargo.toml || echo "Failed to update orbit dependency"
-            sed -i 's|orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git" }|orbit-analyzer = { path = "../orbit-analyzer" }|' orbiton/Cargo.toml || echo "Failed to update orbit-analyzer dependency"
-          else
-            echo "ERROR: orbiton/Cargo.toml does not exist, cannot update dependencies"
-            ls -la orbiton/
-          fi
-          
-          # Since we might have workspace inheritance issues, let's also update orbit's Cargo.toml to eliminate workspace references
-          if [ -f "orbit/Cargo.toml" ]; then
-            echo "Updating orbit Cargo.toml to remove workspace inheritance"
-            sed -i 's/version.workspace = true/version = "0.1.0"/' orbit/Cargo.toml || echo "Failed to update version"
-            sed -i 's/edition.workspace = true/edition = "2021"/' orbit/Cargo.toml || echo "Failed to update edition"
-            sed -i 's/authors.workspace = true/authors = ["Orbit Team <orbit@example.com>"]/' orbit/Cargo.toml || echo "Failed to update authors"
-            sed -i 's/license.workspace = true/license = "MIT OR Apache-2.0"/' orbit/Cargo.toml || echo "Failed to update license"
-            sed -i 's/repository.workspace = true/repository = "https://github.com\/orbitrs\/orbit"/' orbit/Cargo.toml || echo "Failed to update repository"
-            sed -i 's/tokio.workspace = true/tokio = { version = "1.34.0", features = ["full"] }/' orbit/Cargo.toml || echo "Failed to update tokio"
-            sed -i 's/wasm-bindgen.workspace = true/wasm-bindgen = "0.2.89"/' orbit/Cargo.toml || echo "Failed to update wasm-bindgen"
-            sed -i 's/thiserror.workspace = true/thiserror = "1.0"/' orbit/Cargo.toml || echo "Failed to update thiserror"
-            sed -i 's/log.workspace = true/log = "0.4"/' orbit/Cargo.toml || echo "Failed to update log"
-            sed -i 's/serde.workspace = true/serde = { version = "1.0", features = ["derive"] }/' orbit/Cargo.toml || echo "Failed to update serde"
-            sed -i 's/serde_json.workspace = true/serde_json = "1.0"/' orbit/Cargo.toml || echo "Failed to update serde_json"
-          fi
-          
-          # Similarly for orbit-analyzer
-          if [ -f "orbit-analyzer/Cargo.toml" ]; then
-            echo "Updating orbit-analyzer Cargo.toml to remove workspace inheritance"
-            sed -i 's/version.workspace = true/version = "0.1.0"/' orbit-analyzer/Cargo.toml || echo "Failed to update version"
-            sed -i 's/edition.workspace = true/edition = "2021"/' orbit-analyzer/Cargo.toml || echo "Failed to update edition"
-            sed -i 's/authors.workspace = true/authors = ["Orbit Team <orbit@example.com>"]/' orbit-analyzer/Cargo.toml || echo "Failed to update authors"
-            sed -i 's/license.workspace = true/license = "MIT OR Apache-2.0"/' orbit-analyzer/Cargo.toml || echo "Failed to update license"
-            sed -i 's/repository.workspace = true/repository = "https://github.com\/orbitrs\/orbit"/' orbit-analyzer/Cargo.toml || echo "Failed to update repository"
-            sed -i 's/tokio.workspace = true/tokio = { version = "1.34.0", features = ["full"] }/' orbit-analyzer/Cargo.toml || echo "Failed to update tokio"
-            sed -i 's/wasm-bindgen.workspace = true/wasm-bindgen = "0.2.89"/' orbit-analyzer/Cargo.toml || echo "Failed to update wasm-bindgen"
-            sed -i 's/thiserror.workspace = true/thiserror = "1.0"/' orbit-analyzer/Cargo.toml || echo "Failed to update thiserror"
-            sed -i 's/log.workspace = true/log = "0.4"/' orbit-analyzer/Cargo.toml || echo "Failed to update log"
-            sed -i 's/serde.workspace = true/serde = { version = "1.0", features = ["derive"] }/' orbit-analyzer/Cargo.toml || echo "Failed to update serde"
-            sed -i 's/serde_json.workspace = true/serde_json = "1.0"/' orbit-analyzer/Cargo.toml || echo "Failed to update serde_json"
-          fi
-          
-          # Show workspace structure
-          echo "Workspace Cargo.toml files after updates:"
-          find . -name "Cargo.toml" | sort
-          
-          # Show dependencies in updated Cargo.toml files
-          if [ -f "orbiton/Cargo.toml" ]; then
-            echo "Orbiton dependencies:"
-            grep -A 10 "dependencies" orbiton/Cargo.toml
-          fi
-          
-          if [ -f "orbit/Cargo.toml" ]; then
-            echo "Orbit dependencies:"
-            grep -A 10 "dependencies" orbit/Cargo.toml
-          fi
-          
-          if [ -f "orbit-analyzer/Cargo.toml" ]; then
-            echo "Orbit-analyzer dependencies:"
-            grep -A 10 "dependencies" orbit-analyzer/Cargo.toml
-          fi
-
+      - uses: actions/checkout@v4
+      
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Cache
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Cache dependencies
         uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: |
-            . -> target
-
+      
       - name: Run tests
-        run: |
-          # Check if orbiton directory exists before attempting to access it
-          if [ -d "orbiton" ]; then
-            cd orbiton
-            cargo test --all-features
-          else
-            echo "ERROR: orbiton directory does not exist"
-            pwd
-            ls -la
-            exit 1
-          fi
+        run: cargo test --all-features
+        
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: check
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
+          - x86_64-pc-windows-msvc
+          - x86_64-apple-darwin
+          - wasm32-unknown-unknown
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+      
+      - name: Build release
+        run: cargo build --release --target ${{ matrix.target }}
