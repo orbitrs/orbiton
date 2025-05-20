@@ -17,6 +17,9 @@ Whether you're scaffolding a new component, starting a development server, or co
 * 📁 Project scaffolding: `orbiton new`
 * ⚡ Dev server with hot reload: `orbiton dev`
 * 🛠️ Build pipeline for WASM, native, and embedded: `orbiton build`
+* 🚀 Deployment assistance: `orbiton deploy` (or extended `build`)
+* 📊 Performance profiler: `orbiton profile`
+* 🎨 Renderer configuration: `orbiton renderer` (Skia/WGPU/Auto)
 * 🧪 Component test utilities (planned)
 * 🔍 Analyzer integration: `orbiton lint` (via [orbit-analyzer](https://github.com/orbitrs/orbit-analyzer))
 
@@ -41,9 +44,12 @@ orbiton dev
 #### Other Commands
 
 ```bash
-orbiton build        # Build app for target (auto-detects platform)
-orbiton lint         # Analyze your .orbit files for errors
-orbiton generate     # Generate components, services, or stores
+orbiton build                       # Build app for target (auto-detects platform)
+orbiton lint                        # Analyze your .orbit files for errors
+orbiton generate                    # Generate components, services, or stores
+orbiton renderer --config skia      # Configure default renderer to Skia
+orbiton renderer --config wgpu      # Configure default renderer to WGPU
+orbiton renderer --config auto      # Configure automatic renderer selection
 ```
 
 ---
@@ -51,10 +57,12 @@ orbiton generate     # Generate components, services, or stores
 ### 🔮 Roadmap
 
 * [ ] Target switching (Web, Native, Embedded)
-* [ ] Preview mode for single components
+* [ ] Preview mode for single components with renderer selection
 * [ ] Integrated formatter
 * [ ] OrbitKit component sync
 * [ ] Orbit playground launcher
+* [ ] Performance analyzer for renderer optimization
+* [ ] Visual renderer debugging tools
 
 ---
 
