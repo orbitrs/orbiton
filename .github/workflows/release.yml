@@ -5,9 +5,15 @@ on:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+*'
 
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+  id-token: write # This is required for requesting the JWT
+
 jobs:
   release:
-    uses: orbitrs/orbit-workflows/.github/workflows/reusable/rust-release.yml@main
+    uses: orbitrs/orbit-workflows/.github/workflows/rust-release.yml@main
     with:
       publish-crate: true
       build-docs: true
