@@ -4,13 +4,13 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Orbit Team <orbit@example.com>"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/orbitrs/orbit"
+repository = "https://github.com/orbitrs/orbitrs"
 readme = "README.md"
 description = "CLI tooling for the Orbit UI framework ecosystem"
 
 [dependencies]
 # Core dependencies
-orbit = { version = "0.1.0", path = "../orbit" }
+orbitrs = { version = "0.1.0", path = "../orbitrs" }
 orbit-analyzer = { version = "0.1.0", path = "../orbit-analyzer" }
 
 # CLI libraries

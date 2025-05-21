@@ -99,7 +99,7 @@ fn generate_project(name: &str, template: &str, output_dir: &Path) -> Result<()>
     // Prepare template variables
     let vars = serde_json::json!({
         "project_name": name,
-        "orbit_version": orbit::VERSION,
+        "orbit_version": orbitrs::VERSION,
         "orbiton_version": crate::VERSION,
     });
 

@@ -42,9 +42,9 @@ orbiton = "{{ project.orbiton_version }}"
 pub mod components;
 
 /// Initialize the application
-pub fn init() -> Result<(), orbit::Error> {
+pub fn init() -> Result<(), orbitrs::Error> {
     // Initialize Orbit
-    orbit::init()?;
+    orbitrs::init()?;
     
     // Additional initialization here
     
@@ -84,7 +84,7 @@ pub mod counter;
 
     // Sample component
     template.insert(
-        "src/components/counter.orbit".to_string(),
+        "src/components/counter.orbitrs".to_string(),
         r#"<template>
   <div class="counter">
     <h2>{{ count }}</h2>
@@ -118,7 +118,7 @@ button:hover {
 </style>
 
 <script>
-use orbit::prelude::*;
+use orbitrs::prelude::*;
 
 #[derive(Default)]
 pub struct Counter {
@@ -232,7 +232,7 @@ pub mod input;
 
     // Add button component
     template.insert(
-        "src/components/button.orbit".to_string(),
+        "src/components/button.orbitrs".to_string(),
         r#"<template>
   <button 
     class="orbit-button {{ variant }}" 
@@ -278,7 +278,7 @@ pub mod input;
 </style>
 
 <script>
-use orbit::prelude::*;
+use orbitrs::prelude::*;
 
 #[derive(Default)]
 pub struct Button {
@@ -338,7 +338,7 @@ fn full_app_template() -> HashMap<String, String> {
         "src/main.rs".to_string(),
         r#"// Entry point for {{ project.project_name }}
 
-use orbit::platform::{self, PlatformType};
+use orbitrs::platform::{self, PlatformType};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize the application
@@ -370,7 +370,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Add app component
     template.insert(
-        "src/components/app.orbit".to_string(),
+        "src/components/app.orbitrs".to_string(),
         r#"<template>
   <div class="app">
     <header>
@@ -418,7 +418,7 @@ footer {
 </style>
 
 <script>
-use orbit::prelude::*;
+use orbitrs::prelude::*;
 use crate::components::counter::Counter;
 
 pub struct App;

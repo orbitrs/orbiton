@@ -103,7 +103,7 @@ fn setup_file_watching(project_dir: &Path) -> Result<()> {
             // Determine if we should rebuild
             let should_rebuild = event.paths.iter().any(|path| {
                 let extension = path.extension().and_then(|e| e.to_str()).unwrap_or("");
-                extension == "orbit" || extension == "rs"
+                extension == "orbitrs" || extension == "rs"
             });
 
             if should_rebuild {
