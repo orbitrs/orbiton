@@ -4,6 +4,23 @@ on:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
+    inputs:
+      publish-crate:
+        description: 'Whether to publish to crates.io'
+        required: false
+        type: boolean
+        default: false
+      build-docs:
+        description: 'Whether to build and publish documentation'
+        required: false
+        type: boolean
+        default: false
+      cross-platform-artifacts:
+        description: 'Whether to build artifacts for multiple platforms'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -15,8 +32,8 @@ jobs:
   release:
     uses: orbitrs/orbit-workflows/.github/workflows/rust-release.yml@main
     with:
-      publish-crate: true
-      build-docs: true
-      cross-platform-artifacts: true
+      publish-crate: ${{ github.event_name == 'workflow_dispatch' && inputs.publish-crate || github.event_name == 'push' }}
+      build-docs: ${{ github.event_name == 'workflow_dispatch' && inputs.build-docs || github.event_name == 'push' }}
+      cross-platform-artifacts: ${{ github.event_name == 'workflow_dispatch' && inputs.cross-platform-artifacts || github.event_name == 'push' }}
     secrets:
       CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
