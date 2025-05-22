@@ -191,14 +191,46 @@ jobs:
         with:
           path: orbitrs-workspace/orbiton
       
+      - name: Checkout orbitui
+        uses: actions/checkout@v4
+        with:
+          repository: orbitrs/orbitui
+          path: orbitrs-workspace/orbitui
+          
+      - name: Checkout orlint
+        uses: actions/checkout@v4
+        with:
+          repository: orbitrs/orlint
+          path: orbitrs-workspace/orlint
+      
       - name: Install cargo-audit
         uses: taiki-e/install-action@v2
         with:
           tool: cargo-audit
       
+      - name: Create workspace Cargo.toml
+        working-directory: orbitrs-workspace
+        shell: bash
+        run: |
+          cat > Cargo.toml << 'EOF'
+          [workspace]
+          members = [
+              "orbiton",
+              "orbitui",
+              "orlint"
+          ]
+          resolver = "2"
+
+          [workspace.dependencies]
+          orbitui = { path = "orbitui" }
+          orlint = { path = "orlint" }
+          serde = { version = "1.0", features = ["derive"] }
+          thiserror = "1.0"
+          EOF
+      
       - name: Run security audit
-        working-directory: orbitrs-workspace/orbiton  # Changed to orbiton directory since cargo-audit doesn't support --package
-        run: cargo audit
+        working-directory: orbitrs-workspace  # Changed from orbitrs-workspace/orbiton
+        run: cargo audit # Run from workspace root
   
   outdated-dependencies:
     name: Check Outdated Dependencies
