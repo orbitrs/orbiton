@@ -9,9 +9,9 @@ set -e
 mkdir -p ../orbitrs-workspace
 
 # Check if required dependencies are present
-if [ ! -d "../orbitui" ]; then
-    echo "Error: orbitui dependency not found"
-    echo "Please clone https://github.com/orbitrs/orbitui into the parent directory"
+if [ ! -d "../orbit" ]; then
+    echo "Error: orbit dependency not found"
+    echo "Please clone https://github.com/orbitrs/orbit into the parent directory"
     exit 1
 fi
 
@@ -23,10 +23,10 @@ fi
 
 # Verify Cargo.toml setup
 mkdir -p .cargo
-if [ ! -f ".cargo/config.toml" ] || ! grep -q '\[patch."https://github.com/orbitrs/orbitui.git"\]' .cargo/config.toml; then
-    echo "Setting up local patch for orbitui..."
-    echo '[patch."https://github.com/orbitrs/orbitui.git"]' > .cargo/config.toml
-    echo 'orbitui = { path = "../orbitui" }' >> .cargo/config.toml
+if [ ! -f ".cargo/config.toml" ] || ! grep -q '\[patch."https://github.com/orbitrs/orbit.git"\]' .cargo/config.toml; then
+    echo "Setting up local patch for orbit..."
+    echo '[patch."https://github.com/orbitrs/orbit.git"]' > .cargo/config.toml
+    echo 'orbit = { path = "../orbit" }' >> .cargo/config.toml
 fi
 
 if ! grep -q '\[patch."https://github.com/orbitrs/orlint.git"\]' .cargo/config.toml; then

@@ -17,8 +17,8 @@ fi
 if [ ! -f ".cargo/config.toml" ]; then
     echo "Setting up cargo config..."
     mkdir -p .cargo
-    echo '[patch."https://github.com/orbitrs/orbitui.git"]' > .cargo/config.toml
-    echo 'orbitui = { path = "../orbitui" }' >> .cargo/config.toml
+    echo '[patch."https://github.com/orbitrs/orbit.git"]' > .cargo/config.toml
+    echo 'orbit = { path = "../orbit" }' >> .cargo/config.toml
     echo '[patch."https://github.com/orbitrs/orlint.git"]' >> .cargo/config.toml
     echo 'orlint = { path = "../orlint" }' >> .cargo/config.toml
 fi
@@ -41,7 +41,7 @@ echo "[workspace]" > Cargo.toml.tmp
 echo "members = [\".\"]\n" >> Cargo.toml.tmp
 
 # Replace workspace dependencies with explicit versions
-cat Cargo.toml | $SED_INPLACE -E 's/orbitui\.workspace = true/orbitui = { path = "..\/orbitui" }/g' Cargo.toml.tmp
+cat Cargo.toml | $SED_INPLACE -E 's/orbit\.workspace = true/orbit = { path = "..\/orbit" }/g' Cargo.toml.tmp
 cat Cargo.toml | $SED_INPLACE -E 's/orlint\.workspace = true/orlint = { path = "..\/orlint" }/g' Cargo.toml.tmp
 
 # Append modified content

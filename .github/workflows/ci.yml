@@ -32,11 +32,11 @@ jobs:
         with:
           path: orbitrs-workspace/orbiton
       
-      - name: Checkout orbitui
+      - name: Checkout orbit
         uses: actions/checkout@v4
         with:
-          repository: orbitrs/orbitui
-          path: orbitrs-workspace/orbitui
+          repository: orbitrs/orbit
+          path: orbitrs-workspace/orbit
       
       - name: Checkout orlint
         uses: actions/checkout@v4
@@ -75,13 +75,13 @@ jobs:
           [workspace]
           members = [
               "orbiton",
-              "orbitui",
+              "orbit",
               "orlint"
           ]
           resolver = "2"
 
           [workspace.dependencies]
-          orbitui = { path = "orbitui", version = "0.1.10" }
+          orbit = { path = "orbit", version = "0.1.10" }
           orlint = { path = "orlint", version = "0.1.0" }
           serde = { version = "1.0", features = ["derive"] }
           thiserror = "1.0"
@@ -124,11 +124,11 @@ jobs:
         with:
           path: orbitrs-workspace/orbiton
       
-      - name: Checkout orbitui
+      - name: Checkout orbit
         uses: actions/checkout@v4
         with:
-          repository: orbitrs/orbitui
-          path: orbitrs-workspace/orbitui
+          repository: orbitrs/orbit
+          path: orbitrs-workspace/orbit
           
       - name: Checkout orlint
         uses: actions/checkout@v4
@@ -161,13 +161,13 @@ jobs:
           [workspace]
           members = [
               "orbiton",
-              "orbitui",
+              "orbit",
               "orlint"
           ]
           resolver = "2"
 
           [workspace.dependencies]
-          orbitui = { path = "orbitui", version = "0.1.10" }
+          orbit = { path = "orbit", version = "0.1.10" }
           orlint = { path = "orlint", version = "0.1.0" }
           serde = { version = "1.0", features = ["derive"] }
           thiserror = "1.0"
@@ -191,11 +191,11 @@ jobs:
         with:
           path: orbitrs-workspace/orbiton
       
-      - name: Checkout orbitui
+      - name: Checkout orbit
         uses: actions/checkout@v4
         with:
-          repository: orbitrs/orbitui
-          path: orbitrs-workspace/orbitui
+          repository: orbitrs/orbit
+          path: orbitrs-workspace/orbit
           
       - name: Checkout orlint
         uses: actions/checkout@v4
@@ -216,13 +216,13 @@ jobs:
           [workspace]
           members = [
               "orbiton",
-              "orbitui",
+              "orbit",
               "orlint"
           ]
           resolver = "2"
 
           [workspace.dependencies]
-          orbitui = { path = "orbitui" }
+          orbit = { path = "orbit" }
           orlint = { path = "orlint" }
           serde = { version = "1.0", features = ["derive"] }
           thiserror = "1.0"
@@ -246,11 +246,11 @@ jobs:
         with:
           path: orbitrs-workspace/orbiton
       
-      - name: Checkout orbitui
+      - name: Checkout orbit
         uses: actions/checkout@v4
         with:
-          repository: orbitrs/orbitui
-          path: orbitrs-workspace/orbitui
+          repository: orbitrs/orbit
+          path: orbitrs-workspace/orbit
           
       - name: Checkout orlint
         uses: actions/checkout@v4
@@ -274,13 +274,13 @@ jobs:
           [workspace]
           members = [
               "orbiton",
-              "orbitui",
+              "orbit",
               "orlint"
           ]
           resolver = "2"
 
           [workspace.dependencies]
-          orbitui = { path = "orbitui", version = "0.1.10" }
+          orbit = { path = "orbit", version = "0.1.10" }
           orlint = { path = "orlint", version = "0.1.0" }
           serde = { version = "1.0", features = ["derive"] }
           thiserror = "1.0"

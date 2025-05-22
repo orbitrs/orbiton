@@ -15,7 +15,7 @@ ci = []
 
 [dependencies]
 # Core dependencies
-orbitui.workspace = true
+orbit.workspace = true
 orlint.workspace = true
 
 # CLI libraries

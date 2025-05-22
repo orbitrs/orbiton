@@ -12,11 +12,11 @@
         },
         {
             "path": "src/main.rs",
-            "content": "use orbitui::prelude::*;\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    println!(\"Hello from {{project_name}}!\");\n    Ok(())\n}\n"
+            "content": "use orbit::prelude::*;\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    println!(\"Hello from {{project_name}}!\");\n    Ok(())\n}\n"
         },
         {
             "path": "src/components/app.orbit",
-            "content": "<template>\n  <div class=\"app\">\n    <h1>Welcome to {{project_name}}</h1>\n    <p>Created with Orbit UI Framework</p>\n  </div>\n</template>\n\n<style>\n.app {\n  text-align: center;\n  padding: 2rem;\n}\n\nh1 {\n  color: #2c3e50;\n}\n</style>\n\n<code lang=\"rust\">\nuse orbitui::prelude::*;\n\npub struct App;\n\nimpl Component for App {\n    type Props = ();\n\n    fn new(_: Self::Props) -> Self {\n        Self\n    }\n}\n</code>\n"
+            "content": "<template>\n  <div class=\"app\">\n    <h1>Welcome to {{project_name}}</h1>\n    <p>Created with Orbit UI Framework</p>\n  </div>\n</template>\n\n<style>\n.app {\n  text-align: center;\n  padding: 2rem;\n}\n\nh1 {\n  color: #2c3e50;\n}\n</style>\n\n<code lang=\"rust\">\nuse orbit::prelude::*;\n\npub struct App;\n\nimpl Component for App {\n    type Props = ();\n\n    fn new(_: Self::Props) -> Self {\n        Self\n    }\n}\n</code>\n"
         },
         {
             "path": "README.md",

@@ -9,7 +9,7 @@ echo "Setting up CI environment for orbiton..."
 # Create workspace directory structure
 mkdir -p ../orbitrs-workspace
 mkdir -p ../orbitrs-workspace/orbiton
-mkdir -p ../orbitrs-workspace/orbitui
+mkdir -p ../orbitrs-workspace/orbit
 mkdir -p ../orbitrs-workspace/orlint
 
 # Copy orbiton to workspace
@@ -18,7 +18,7 @@ cp -R . ../orbitrs-workspace/orbiton/
 
 # Clone dependencies
 echo "Cloning dependencies..."
-git clone --depth 1 https://github.com/orbitrs/orbitui.git ../orbitrs-workspace/orbitui
+git clone --depth 1 https://github.com/orbitrs/orbit.git ../orbitrs-workspace/orbit
 git clone --depth 1 https://github.com/orbitrs/orlint.git ../orbitrs-workspace/orlint
 
 # Update Cargo.toml for CI environment
@@ -27,8 +27,8 @@ cd ../orbitrs-workspace/orbiton
 
 # Create proper cargo config
 mkdir -p .cargo
-echo "[patch.\"https://github.com/orbitrs/orbitui.git\"]" > .cargo/config.toml
-echo "orbitui = { path = \"../orbitui\" }" >> .cargo/config.toml
+echo "[patch.\"https://github.com/orbitrs/orbit.git\"]" > .cargo/config.toml
+echo "orbit = { path = \"../orbit\" }" >> .cargo/config.toml
 echo "[patch.\"https://github.com/orbitrs/orlint.git\"]" >> .cargo/config.toml
 echo "orlint = { path = \"../orlint\" }" >> .cargo/config.toml
 
