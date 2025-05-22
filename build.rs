@@ -1,6 +1,6 @@
 use std::env;
-use std::path::{Path, PathBuf};
 use std::fs;
+use std::path::{Path, PathBuf};
 
 fn copy_dir_recursively(src: &Path, dst: &Path) -> std::io::Result<()> {
     if !dst.exists() {
@@ -29,14 +29,15 @@ fn main() {
     let profile = env::var("PROFILE").unwrap();
 
     // Get the source templates directory
-    let templates_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
-        .join("templates");
+    let templates_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join("templates");
 
     // Calculate target templates directory (parallel to executable)
     let target_templates_dir = out_dir
         .ancestors()
-        .find(|p| p.file_name()
-            .map_or(false, |name| name.to_string_lossy() == profile))
+        .find(|p| {
+            p.file_name()
+                .map_or(false, |name| name.to_string_lossy() == profile)
+        })
         .expect("Could not find target directory");
 
     println!("cargo:rerun-if-changed=templates");

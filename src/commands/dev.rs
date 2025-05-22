@@ -107,19 +107,24 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
         for event in rx {
             debug!("File change event: {:?}", event);
 
-            let paths = event.paths.iter().map(|p| {
-                p.strip_prefix(&pdir)
-                    .unwrap_or(p)
-                    .to_string_lossy()
-                    .into_owned()
-            }).collect::<Vec<_>>();
+            let paths = event
+                .paths
+                .iter()
+                .map(|p| {
+                    p.strip_prefix(&pdir)
+                        .unwrap_or(p)
+                        .to_string_lossy()
+                        .into_owned()
+                })
+                .collect::<Vec<_>>();
 
             // Send the file change event to all connected clients
             let message = serde_json::json!({
                 "type": "fileChange",
                 "paths": paths,
                 "kind": format!("{:?}", event.kind)
-            }).to_string();
+            })
+            .to_string();
 
             if let Err(e) = server.broadcast_update(message) {
                 error!("Failed to broadcast file change: {}", e);
@@ -136,24 +141,26 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
                     "{} project due to file changes",
                     style("Rebuilding").bold().yellow()
                 );
-                
+
                 // Send rebuild event to clients
                 let message = serde_json::json!({
                     "type": "rebuild",
                     "status": "started"
-                }).to_string();
-                
+                })
+                .to_string();
+
                 if let Err(e) = server.broadcast_update(message) {
                     error!("Failed to broadcast rebuild start: {}", e);
                 }
-                
+
                 // Here we would trigger the actual rebuild
                 // For now, just simulate a rebuild completion
                 let message = serde_json::json!({
                     "type": "rebuild",
                     "status": "completed"
-                }).to_string();
-                
+                })
+                .to_string();
+
                 if let Err(e) = server.broadcast_update(message) {
                     error!("Failed to broadcast rebuild completion: {}", e);
                 }

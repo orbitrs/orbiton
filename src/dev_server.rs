@@ -2,18 +2,15 @@
 
 use anyhow::Result;
 use futures_util::{future, SinkExt, StreamExt};
-use log::{debug, info, error};
+use log::{debug, error, info};
 use std::{
-    net::{SocketAddr, IpAddr, Ipv4Addr},
+    net::{IpAddr, Ipv4Addr, SocketAddr},
     path::{Path, PathBuf},
     thread,
 };
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::broadcast;
-use tokio_tungstenite::{
-    accept_async,
-    tungstenite::protocol::Message,
-};
+use tokio_tungstenite::{accept_async, tungstenite::protocol::Message};
 
 /// Development server
 pub struct DevServer {
@@ -60,7 +57,7 @@ impl DevServer {
         let handle = thread::spawn(move || {
             // Set up the Tokio runtime
             let rt = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
-            
+
             rt.block_on(async {
                 // Start WebSocket server
                 let ws_rx = tx.subscribe();
@@ -93,8 +90,8 @@ impl DevServer {
                         let _ = request.respond(response);
                     } else {
                         // File not found, return 404
-                        let response =
-                            tiny_http::Response::from_string("File not found").with_status_code(404);
+                        let response = tiny_http::Response::from_string("File not found")
+                            .with_status_code(404);
                         let _ = request.respond(response);
                     }
                 }
@@ -111,7 +108,8 @@ impl DevServer {
     /// Send an update to all connected WebSocket clients
     pub fn broadcast_update(&self, message: String) -> Result<()> {
         if let Some(tx) = &self.tx {
-            tx.send(message).map_err(|e| anyhow::anyhow!("Failed to broadcast message: {}", e))?;
+            tx.send(message)
+                .map_err(|e| anyhow::anyhow!("Failed to broadcast message: {}", e))?;
         }
         Ok(())
     }
@@ -157,7 +155,7 @@ impl DevServer {
         while let Ok((stream, addr)) = listener.accept().await {
             let ws_stream = accept_async(stream).await?;
             let rx = rx.resubscribe();
-            
+
             tokio::spawn(async move {
                 Self::handle_websocket_connection(ws_stream, addr, rx).await;
             });

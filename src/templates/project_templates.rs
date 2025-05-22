@@ -79,24 +79,24 @@ impl TemplateManager {
     pub fn new() -> Result<Self> {
         // List of possible template directories
         let mut possible_dirs = Vec::new();
-        
+
         // Try relative to executable
         if let Ok(exe) = std::env::current_exe() {
             if let Some(dir) = exe.parent() {
                 possible_dirs.push(dir.join("templates"));
             }
         }
-        
+
         // Try relative to crate root (for development)
         if let Ok(dir) = std::env::current_dir() {
             possible_dirs.push(dir.join("templates"));
         }
-        
+
         // Try relative to workspace root
         if let Ok(dir) = std::env::current_dir() {
             possible_dirs.extend(dir.ancestors().take(3).map(|p| p.join("templates")));
         }
-        
+
         // Try relative to cargo manifest directory (for development)
         if let Ok(dir) = std::env::var("CARGO_MANIFEST_DIR") {
             possible_dirs.push(PathBuf::from(dir).join("templates"));
@@ -105,7 +105,9 @@ impl TemplateManager {
         for templates_dir in possible_dirs.iter() {
             debug!("Checking for templates in {:?}", templates_dir);
             if templates_dir.exists() {
-                return Ok(Self { templates_dir: templates_dir.clone() });
+                return Ok(Self {
+                    templates_dir: templates_dir.clone(),
+                });
             }
         }
 
