@@ -10,7 +10,7 @@ description = "CLI tooling for the Orbit UI framework ecosystem"
 
 [dependencies]
 # Core dependencies
-orbitrs = { version = "0.1.0", path = "../orbitrs", optional = true }
+orbitrs = { git = "https://github.com/orbitrs/orbitrs.git", branch = "main" }
 
 # Use normal path for local dev and different path for CI
 orbit-analyzer = { version = "0.1.0", path = "../orbit-analyzer", optional = true }

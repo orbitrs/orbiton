@@ -1,4 +1,2 @@
-[patch.crates-io]
-# Use local versions of dependencies when available
+[patch."https://github.com/orbitrs/orbitrs.git"]
 orbitrs = { path = "../orbitrs" }
-orbit-analyzer = { path = "../orbit-analyzer" }
