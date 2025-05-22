@@ -23,20 +23,41 @@ if [ ! -f ".cargo/config.toml" ]; then
     echo 'orlint = { path = "../orlint" }' >> .cargo/config.toml
 fi
 
-# Temporarily add workspace config if needed
-if ! grep -q "\[workspace\]" Cargo.toml; then
-    echo "Adding temporary workspace configuration..."
-    cp Cargo.toml Cargo.toml.bak
-    echo -e "[workspace]\nmembers = [\".\"]\n$(cat Cargo.toml)" > Cargo.toml
+# Temporarily add workspace config and fix workspace dependencies
+cp Cargo.toml Cargo.toml.bak
+echo "Preparing Cargo.toml for formatting check..."
+
+# Create a sed command that works on both macOS and Linux
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS needs an empty string for the extension to modify files in-place
+    SED_INPLACE="sed -i ''"
+else
+    # Linux version
+    SED_INPLACE="sed -i"
 fi
+
+# Create temporary file with workspace configuration and explicit dependencies
+echo "[workspace]" > Cargo.toml.tmp
+echo "members = [\".\"]\n" >> Cargo.toml.tmp
+
+# Replace workspace dependencies with explicit versions
+cat Cargo.toml | $SED_INPLACE -E 's/orbitui\.workspace = true/orbitui = { path = "..\/orbitui" }/g' Cargo.toml.tmp
+cat Cargo.toml | $SED_INPLACE -E 's/orlint\.workspace = true/orlint = { path = "..\/orlint" }/g' Cargo.toml.tmp
+
+# Append modified content
+cat Cargo.toml >> Cargo.toml.tmp
+mv Cargo.toml.tmp Cargo.toml
 
 # Run formatting check
 echo "Running cargo fmt..."
 cargo fmt --all -- --check
+FORMAT_EXIT_CODE=$?
 
-# Restore original Cargo.toml if it was modified
-if [ -f "Cargo.toml.bak" ]; then
-    mv Cargo.toml.bak Cargo.toml
-fi
+# Restore original Cargo.toml
+echo "Restoring original Cargo.toml..."
+mv Cargo.toml.bak Cargo.toml
+
+# Return the formatter exit code
+exit $FORMAT_EXIT_CODE
 
 echo "Formatting check completed successfully!"
