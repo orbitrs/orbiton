@@ -63,12 +63,15 @@ pub fn execute(args: BuildArgs) -> Result<()> {
 
     // Validate project directory
     if !project_dir.exists() {
-        return Err(anyhow::anyhow!("Project directory does not exist: {:?}", project_dir));
+        return Err(anyhow::anyhow!(
+            "Project directory does not exist: {:?}",
+            project_dir
+        ));
     }
 
     // Convert target string to enum for better type safety
     let target = BuildTarget::from(args.target.as_str());
-    
+
     // Determine the output directory
     let output_dir = match args.output {
         Some(dir) => dir,
@@ -148,7 +151,7 @@ fn build_for_web(project_dir: &Path, output_dir: &Path, release: bool) -> Result
     // Parse .orbit files
     progress.step("Parsing .orbit files");
     let orbit_files = find_orbit_files(project_dir)?;
-    
+
     // Generate Rust code
     progress.step("Generating Rust code");
     generate_rust_code(&orbit_files, output_dir)?;
@@ -240,40 +243,40 @@ fn compile_to_wasm(output_dir: &Path, release: bool) -> Result<()> {
 
 fn generate_web_wrappers(output_dir: &Path) -> Result<()> {
     let _ = output_dir; // Acknowledge unused parameter in placeholder
-    // Placeholder: In a real implementation, this would:
-    // 1. Generate index.html
-    // 2. Generate JavaScript glue code
-    // 3. Copy static assets
+                        // Placeholder: In a real implementation, this would:
+                        // 1. Generate index.html
+                        // 2. Generate JavaScript glue code
+                        // 3. Copy static assets
     std::thread::sleep(std::time::Duration::from_millis(300));
     Ok(())
 }
 
 fn compile_native_binary(output_dir: &Path, release: bool) -> Result<()> {
     let _ = (output_dir, release); // Acknowledge unused parameters in placeholder
-    // Placeholder: In a real implementation, this would:
-    // 1. Set up platform-specific compilation flags
-    // 2. Run cargo build with appropriate features
-    // 3. Handle optimization if release=true
+                                   // Placeholder: In a real implementation, this would:
+                                   // 1. Set up platform-specific compilation flags
+                                   // 2. Run cargo build with appropriate features
+                                   // 3. Handle optimization if release=true
     std::thread::sleep(std::time::Duration::from_millis(1500));
     Ok(())
 }
 
 fn optimize_for_embedded(output_dir: &Path) -> Result<()> {
     let _ = output_dir; // Acknowledge unused parameter in placeholder
-    // Placeholder: In a real implementation, this would:
-    // 1. Apply embedded-specific optimizations
-    // 2. Minimize binary size
-    // 3. Verify memory constraints
+                        // Placeholder: In a real implementation, this would:
+                        // 1. Apply embedded-specific optimizations
+                        // 2. Minimize binary size
+                        // 3. Verify memory constraints
     std::thread::sleep(std::time::Duration::from_millis(800));
     Ok(())
 }
 
 fn create_firmware_package(output_dir: &Path, release: bool) -> Result<()> {
     let _ = (output_dir, release); // Acknowledge unused parameters in placeholder
-    // Placeholder: In a real implementation, this would:
-    // 1. Package binary and assets
-    // 2. Generate firmware image
-    // 3. Create update package if needed
+                                   // Placeholder: In a real implementation, this would:
+                                   // 1. Package binary and assets
+                                   // 2. Generate firmware image
+                                   // 3. Create update package if needed
     std::thread::sleep(std::time::Duration::from_millis(500));
     Ok(())
 }

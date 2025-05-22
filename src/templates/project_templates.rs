@@ -58,9 +58,9 @@ impl TemplateType {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ComponentFormat {
     #[serde(rename = "legacy")]
-    Legacy,   // Old <script> format
+    Legacy, // Old <script> format
     #[serde(rename = "modern")]
-    Modern,   // New <code> format with section tags
+    Modern, // New <code> format with section tags
     #[serde(rename = "markdown")]
     Markdown, // Full Markdown format with code blocks
 }
@@ -73,8 +73,8 @@ impl Default for ComponentFormat {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ComponentSection {
-    pub name: String,    // e.g., "template", "style", "code", "tests", "markdown"
-    pub lang: String,    // e.g., "html", "css", "rust", "markdown"
+    pub name: String, // e.g., "template", "style", "code", "tests", "markdown"
+    pub lang: String, // e.g., "html", "css", "rust", "markdown"
     pub content: String,
 }
 
@@ -109,17 +109,25 @@ impl TemplateManager {
         ]
     }
 
-    pub fn generate_project(&self, name: &str, template_type: TemplateType, output_dir: &Path) -> Result<()> {
+    pub fn generate_project(
+        &self,
+        name: &str,
+        template_type: TemplateType,
+        output_dir: &Path,
+    ) -> Result<()> {
         let template_dir = self.templates_dir.join(template_type.template_dir());
         if !template_dir.exists() {
-            return Err(anyhow::anyhow!("Template directory not found: {:?}", template_dir));
+            return Err(anyhow::anyhow!(
+                "Template directory not found: {:?}",
+                template_dir
+            ));
         }
 
         let template_json = std::fs::read_to_string(template_dir.join("template.json"))
             .with_context(|| format!("Failed to read template.json from {:?}", template_dir))?;
-        
-        let mut template: ProjectTemplate = serde_json::from_str(&template_json)
-            .context("Failed to parse template.json")?;
+
+        let mut template: ProjectTemplate =
+            serde_json::from_str(&template_json).context("Failed to parse template.json")?;
 
         template.name = name.to_string();
 
@@ -142,8 +150,11 @@ impl TemplateManager {
         Ok(())
     }
 
-    #[allow(dead_code)]  // Used in other modules
-    pub fn parse_component_sections(content: &str, format: ComponentFormat) -> Result<Vec<ComponentSection>> {
+    #[allow(dead_code)] // Used in other modules
+    pub fn parse_component_sections(
+        content: &str,
+        format: ComponentFormat,
+    ) -> Result<Vec<ComponentSection>> {
         match format {
             ComponentFormat::Legacy => Self::parse_legacy_format(content),
             ComponentFormat::Modern => Self::parse_modern_format(content),
@@ -176,7 +187,7 @@ impl TemplateManager {
                             });
                             markdown_content.clear();
                         }
-                        
+
                         if let Some(section) = current_section {
                             sections.push(section);
                         }
@@ -306,14 +317,15 @@ impl TemplateManager {
             "rust" => "code",
             "markdown" | "md" => "markdown",
             _ => lang,
-        }.to_string()
+        }
+        .to_string()
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::tempdir;  // Now properly imported from added dependency
+    use tempfile::tempdir; // Now properly imported from added dependency
 
     #[test]
     fn test_template_type_from_str() {
@@ -337,18 +349,14 @@ mod tests {
     fn test_create_from_template() -> Result<()> {
         let temp_dir = tempdir()?;
         let template_manager = TemplateManager::new()?;
-        
+
         // Create a basic project
-        template_manager.generate_project(
-            "test-project",
-            TemplateType::Basic,
-            temp_dir.path(),
-        )?;
+        template_manager.generate_project("test-project", TemplateType::Basic, temp_dir.path())?;
 
         // Verify created files
         assert!(temp_dir.path().join("Cargo.toml").exists());
         assert!(temp_dir.path().join("src/main.rs").exists());
-        
+
         Ok(())
     }
 }

@@ -1,7 +1,7 @@
 use liquid::model::{ArrayView, DisplayCow, ObjectView, ScalarCow, Value, ValueView};
-use std::fmt::Debug;
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::fmt::Debug;
 use std::fmt::Display;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -22,7 +22,12 @@ pub struct Component {
 }
 
 impl Component {
-    pub fn new(name: String, template: String, props: HashMap<String, PropType>, description: String) -> Self {
+    pub fn new(
+        name: String,
+        template: String,
+        props: HashMap<String, PropType>,
+        description: String,
+    ) -> Self {
         Self {
             name,
             template,
@@ -108,7 +113,7 @@ mod tests {
             "Button".to_string(),
             "button".to_string(),
             HashMap::new(),
-            "A simple button component".to_string()
+            "A simple button component".to_string(),
         );
         component.add_prop("disabled".to_string(), PropType::Boolean);
         component.add_prop("label".to_string(), PropType::String);
@@ -128,9 +133,12 @@ mod tests {
             "UserCard".to_string(),
             "user-card".to_string(),
             HashMap::new(),
-            "A user card component".to_string()
+            "A user card component".to_string(),
         );
-        component.add_prop("tags".to_string(), PropType::Array(Box::new(PropType::String)));
+        component.add_prop(
+            "tags".to_string(),
+            PropType::Array(Box::new(PropType::String)),
+        );
         component.add_prop("user".to_string(), PropType::Object(user_type));
 
         let code = component.generate_code();

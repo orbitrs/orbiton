@@ -32,8 +32,8 @@ pub fn execute(args: NewArgs) -> Result<()> {
         style(&args.name).bold()
     );
 
-    let template_manager = TemplateManager::new()
-        .context("Failed to initialize template manager")?;
+    let template_manager =
+        TemplateManager::new().context("Failed to initialize template manager")?;
 
     // Determine the template to use
     let template_type = if let Some(template) = args.template {
@@ -50,7 +50,8 @@ pub fn execute(args: NewArgs) -> Result<()> {
             .interact()
             .context("Failed to get user selection")?;
 
-        templates.get(selection)
+        templates
+            .get(selection)
             .ok_or_else(|| anyhow::anyhow!("Invalid template selection"))?
             .clone()
     };
@@ -74,7 +75,8 @@ pub fn execute(args: NewArgs) -> Result<()> {
     }
 
     // Generate the project from the template
-    template_manager.generate_project(&args.name, template_type, &output_dir)
+    template_manager
+        .generate_project(&args.name, template_type, &output_dir)
         .with_context(|| format!("Failed to generate project in {:?}", output_dir))?;
 
     println!(
