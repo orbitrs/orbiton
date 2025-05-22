@@ -69,8 +69,9 @@ jobs:
       
       - name: Create workspace Cargo.toml
         working-directory: orbitrs-workspace # Create this at the root of the checked-out code
+        shell: bash
         run: |
-          cat <<EOF > Cargo.toml
+          cat > Cargo.toml << 'EOF'
           [workspace]
           members = [
               "orbiton",
@@ -154,8 +155,9 @@ jobs:
       
       - name: Create workspace Cargo.toml
         working-directory: orbitrs-workspace
+        shell: bash
         run: |
-          cat <<EOF > Cargo.toml
+          cat > Cargo.toml << 'EOF'
           [workspace]
           members = [
               "orbiton",
@@ -195,8 +197,8 @@ jobs:
           tool: cargo-audit
       
       - name: Run security audit
-        working-directory: orbitrs-workspace  # Changed from orbitrs-workspace/orbiton
-        run: cargo audit --package orbiton    # Specify package to audit only orbiton
+        working-directory: orbitrs-workspace/orbiton  # Changed to orbiton directory since cargo-audit doesn't support --package
+        run: cargo audit
   
   outdated-dependencies:
     name: Check Outdated Dependencies
@@ -234,8 +236,9 @@ jobs:
       
       - name: Create workspace Cargo.toml
         working-directory: orbitrs-workspace
+        shell: bash
         run: |
-          cat <<EOF > Cargo.toml
+          cat > Cargo.toml << 'EOF'
           [workspace]
           members = [
               "orbiton",
@@ -252,5 +255,5 @@ jobs:
           EOF
           
       - name: Check for outdated dependencies
-        working-directory: orbitrs-workspace  # Changed from orbitrs-workspace/orbiton
-        run: cargo outdated --package orbiton --exit-code 0  # Specify package to check only orbiton's dependencies
+        working-directory: orbitrs-workspace  
+        run: cargo outdated --packages orbiton --exit-code 0  # Changed --package to --packages
