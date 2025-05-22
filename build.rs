@@ -39,12 +39,6 @@ fn main() {
             "cargo:warning=Templates directory does not exist: {:?}",
             templates_dir
         );
-        // In CI environment, we might not have all dependencies
-        // Just exit gracefully if running with CI feature
-        if cfg!(feature = "ci") {
-            println!("cargo:warning=Running in CI mode, skipping template copying");
-            return;
-        }
     }
 
     // Calculate target templates directory (parallel to executable)
