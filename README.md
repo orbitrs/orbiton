@@ -33,6 +33,25 @@ cargo install orbiton
 
 ---
 
+### 🛠️ Development Setup
+
+For development, you'll need to clone the orbiton repository alongside its dependencies:
+
+```bash
+# Create a workspace directory
+mkdir -p orbit-workspace
+cd orbit-workspace
+
+# Clone all required repositories
+git clone https://github.com/orbitrs/orbiton.git
+git clone https://github.com/orbitrs/orbitrs.git
+git clone https://github.com/orbitrs/orbit-analyzer.git
+
+# Or use our setup script
+cd orbiton
+./scripts/setup-workspace.sh
+```
+
 ### 💻 Usage
 
 ```bash
