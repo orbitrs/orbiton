@@ -87,12 +87,12 @@ jobs:
           EOF
 
       - name: Check code formatting
-        working-directory: orbitrs-workspace/orbiton
-        run: cargo fmt --all -- --check
+        working-directory: orbitrs-workspace  # Changed from orbitrs-workspace/orbiton
+        run: cargo fmt --all -- --check       # This will now run for the entire workspace
       
       - name: Run clippy
-        working-directory: orbitrs-workspace/orbiton
-        run: cargo clippy --features ci --all-targets -- -D warnings
+        working-directory: orbitrs-workspace  # Changed from orbitrs-workspace/orbiton
+        run: cargo clippy --package orbiton --features ci --all-targets -- -D warnings  # Specify package to run clippy only for orbiton
         
   test:
     name: Test
@@ -152,9 +152,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libfontconfig1-dev libfreetype6-dev
       
+      - name: Create workspace Cargo.toml
+        working-directory: orbitrs-workspace
+        run: |
+          cat <<EOF > Cargo.toml
+          [workspace]
+          members = [
+              "orbiton",
+              "orbitui",
+              "orlint"
+          ]
+          resolver = "2"
+
+          [workspace.dependencies]
+          orbitui = { path = "orbitui", version = "0.1.10" }
+          orlint = { path = "orlint", version = "0.1.0" }
+          serde = { version = "1.0", features = ["derive"] }
+          thiserror = "1.0"
+          EOF
+
       - name: Run tests
-        working-directory: orbitrs-workspace/orbiton
-        run: cargo test --target ${{ matrix.target }} --features ci
+        working-directory: orbitrs-workspace  # Changed from orbitrs-workspace/orbiton
+        run: cargo test --package orbiton --target ${{ matrix.target }} --features ci  # Specify package to test only orbiton
   
   security-audit:
     name: Security Audit
@@ -176,8 +195,8 @@ jobs:
           tool: cargo-audit
       
       - name: Run security audit
-        working-directory: orbitrs-workspace/orbiton
-        run: cargo audit
+        working-directory: orbitrs-workspace  # Changed from orbitrs-workspace/orbiton
+        run: cargo audit --package orbiton    # Specify package to audit only orbiton
   
   outdated-dependencies:
     name: Check Outdated Dependencies
@@ -213,6 +232,25 @@ jobs:
         with:
           tool: cargo-outdated
       
+      - name: Create workspace Cargo.toml
+        working-directory: orbitrs-workspace
+        run: |
+          cat <<EOF > Cargo.toml
+          [workspace]
+          members = [
+              "orbiton",
+              "orbitui",
+              "orlint"
+          ]
+          resolver = "2"
+
+          [workspace.dependencies]
+          orbitui = { path = "orbitui", version = "0.1.10" }
+          orlint = { path = "orlint", version = "0.1.0" }
+          serde = { version = "1.0", features = ["derive"] }
+          thiserror = "1.0"
+          EOF
+          
       - name: Check for outdated dependencies
-        working-directory: orbitrs-workspace/orbiton
-        run: cargo outdated --exit-code 0
+        working-directory: orbitrs-workspace  # Changed from orbitrs-workspace/orbiton
+        run: cargo outdated --package orbiton --exit-code 0  # Specify package to check only orbiton's dependencies
