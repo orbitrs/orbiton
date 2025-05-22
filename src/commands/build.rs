@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 use clap::Args;
 use console::style;
 use log::info;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[derive(Args)]
 pub struct BuildArgs {
@@ -57,9 +57,9 @@ pub fn execute(args: BuildArgs) -> Result<()> {
 
     // Execute appropriate build command based on target
     match args.target.as_str() {
-        "web" => build_for_web(&project_dir, &output_dir, args.release)?,
-        "desktop" => build_for_desktop(&project_dir, &output_dir, args.release)?,
-        "embedded" => build_for_embedded(&project_dir, &output_dir, args.release)?,
+        "web" => build_for_web(project_dir.as_path(), output_dir.as_path(), args.release)?,
+        "desktop" => build_for_desktop(project_dir.as_path(), output_dir.as_path(), args.release)?,
+        "embedded" => build_for_embedded(project_dir.as_path(), output_dir.as_path(), args.release)?,
         _ => {
             return Err(anyhow::anyhow!("Unsupported target: {}", args.target));
         }
@@ -74,7 +74,7 @@ pub fn execute(args: BuildArgs) -> Result<()> {
     Ok(())
 }
 
-fn build_for_web(_project_dir: &PathBuf, _output_dir: &PathBuf, _release: bool) -> Result<()> {
+fn build_for_web(_project_dir: &Path, _output_dir: &Path, _release: bool) -> Result<()> {
     info!("Building for Web target");
 
     // In a real implementation, this would:
@@ -104,7 +104,7 @@ fn build_for_web(_project_dir: &PathBuf, _output_dir: &PathBuf, _release: bool) 
     Ok(())
 }
 
-fn build_for_desktop(_project_dir: &PathBuf, _output_dir: &PathBuf, _release: bool) -> Result<()> {
+fn build_for_desktop(_project_dir: &Path, _output_dir: &Path, _release: bool) -> Result<()> {
     info!("Building for Desktop target");
 
     // In a real implementation, this would:
@@ -133,7 +133,7 @@ fn build_for_desktop(_project_dir: &PathBuf, _output_dir: &PathBuf, _release: bo
     Ok(())
 }
 
-fn build_for_embedded(_project_dir: &PathBuf, _output_dir: &PathBuf, _release: bool) -> Result<()> {
+fn build_for_embedded(_project_dir: &Path, _output_dir: &Path, _release: bool) -> Result<()> {
     info!("Building for Embedded target");
 
     // In a real implementation, this would:
