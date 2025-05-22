@@ -82,15 +82,7 @@ jobs:
         
       - name: Run clippy
         working-directory: orbitrs-workspace/orbiton
-        run: |
-          # Fix dependency paths for CI environment
-          ./scripts/fix-orbit-analyzer-dependency.sh
-          # Update features
-          sed -i 's/default = \["local-dependencies"\]/default = \["ci"\]/g' Cargo.toml
-          # Make sure tempfile dependency has exact version to avoid ambiguity
-          sed -i 's/tempfile = "[^"]*"/tempfile = "3.8.0"/g' Cargo.toml
-          
-          cargo clippy --all-targets --all-features -- -D warnings
+        run: cargo clippy --all-targets --all-features -- -D warnings
         
   test:
     name: Test
