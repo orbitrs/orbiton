@@ -1,7 +1,8 @@
 use anyhow::{Context, Result};
+use log::debug;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProjectTemplate {
@@ -45,14 +46,6 @@ impl TemplateType {
             _ => Err(anyhow::anyhow!("Invalid template type: {}", s)),
         }
     }
-
-    pub fn template_dir(&self) -> &'static str {
-        match self {
-            Self::Basic => "templates/basic",
-            Self::Advanced => "templates/advanced",
-            Self::ComponentLibrary => "templates/component-library",
-        }
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -84,21 +77,46 @@ pub struct TemplateManager {
 
 impl TemplateManager {
     pub fn new() -> Result<Self> {
-        let exe_dir = std::env::current_exe()
-            .context("Failed to get executable path")?
-            .parent()
-            .ok_or_else(|| anyhow::anyhow!("Failed to get executable directory"))?
-            .to_path_buf();
-
-        let templates_dir = exe_dir.join("templates");
-        if !templates_dir.exists() {
-            return Err(anyhow::anyhow!(
-                "Templates directory not found at {:?}. Make sure the template files are properly installed.",
-                templates_dir
-            ));
+        // List of possible template directories
+        let mut possible_dirs = Vec::new();
+        
+        // Try relative to executable
+        if let Ok(exe) = std::env::current_exe() {
+            if let Some(dir) = exe.parent() {
+                possible_dirs.push(dir.join("templates"));
+            }
+        }
+        
+        // Try relative to crate root (for development)
+        if let Ok(dir) = std::env::current_dir() {
+            possible_dirs.push(dir.join("templates"));
+        }
+        
+        // Try relative to workspace root
+        if let Ok(dir) = std::env::current_dir() {
+            possible_dirs.extend(dir.ancestors().take(3).map(|p| p.join("templates")));
+        }
+        
+        // Try relative to cargo manifest directory (for development)
+        if let Ok(dir) = std::env::var("CARGO_MANIFEST_DIR") {
+            possible_dirs.push(PathBuf::from(dir).join("templates"));
         }
 
-        Ok(Self { templates_dir })
+        for templates_dir in possible_dirs.iter() {
+            debug!("Checking for templates in {:?}", templates_dir);
+            if templates_dir.exists() {
+                return Ok(Self { templates_dir: templates_dir.clone() });
+            }
+        }
+
+        Err(anyhow::anyhow!(
+            "Templates directory not found. Make sure the template files are properly installed. Looked in:\n{}",
+            possible_dirs
+                .iter()
+                .map(|p| format!("- {:?}", p))
+                .collect::<Vec<_>>()
+                .join("\n")
+        ))
     }
 
     pub fn list_templates(&self) -> Vec<TemplateType> {
@@ -115,7 +133,7 @@ impl TemplateManager {
         template_type: TemplateType,
         output_dir: &Path,
     ) -> Result<()> {
-        let template_dir = self.templates_dir.join(template_type.template_dir());
+        let template_dir = self.templates_dir.join(template_type.to_string());
         if !template_dir.exists() {
             return Err(anyhow::anyhow!(
                 "Template directory not found: {:?}",

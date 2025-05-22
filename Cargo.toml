@@ -10,8 +10,8 @@ description = "CLI tooling for the Orbit UI framework ecosystem"
 
 [dependencies]
 # Core dependencies
-orbitrs = { version = "0.1.0", path = "../orbitrs" }
-orbit-analyzer = { version = "0.1.0", path = "../orbit-analyzer" }
+orbitrs = { version = "0.1.0", path = "../orbitrs", optional = true }
+orbit-analyzer = { version = "0.1.0", path = "../orbit-analyzer", optional = true }
 
 # CLI libraries
 clap = { version = "4.4", features = ["derive", "std"], default-features = false }
@@ -29,6 +29,15 @@ serde_yaml = "0.9.27"
 # Filesystem operations
 walkdir = "2.4.0"
 
+[features]
+default = ["local-dependencies"]
+local-dependencies = ["orbitrs", "orbit-analyzer"]
+ci = []
+
+# Used when building in CI environments or without local dependencies
+[target.'cfg(not(feature = "local-dependencies"))'.dependencies]
+# Empty stubs or mock implementations can be added here if needed
+
 # Error handling
 thiserror = "1.0"
 log = "0.4"
@@ -38,7 +47,9 @@ anyhow = "1.0.75"
 # HTTP and networking
 reqwest = { version = "0.11", features = ["json", "blocking"] }
 tiny_http = "0.12.0"
-websocket = "0.26.5"
+tokio = { version = "1.28", features = ["full"] }
+tokio-tungstenite = "0.21"  # Modern WebSocket implementation
+futures-util = "0.3"  # For WebSocket stream utilities
 
 # Process handling
 ctrlc = "3.4.1"

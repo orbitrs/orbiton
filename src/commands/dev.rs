@@ -60,7 +60,7 @@ pub fn execute(args: DevArgs) -> Result<()> {
     }
 
     // Set up file watching
-    setup_file_watching(&project_dir)?;
+    setup_file_watching(project_dir.as_path(), &server)?;
 
     // Wait for Ctrl+C
     println!("Press {} to stop the server", style("Ctrl+C").bold());
@@ -75,8 +75,12 @@ pub fn execute(args: DevArgs) -> Result<()> {
     }
 }
 
-fn setup_file_watching(project_dir: &Path) -> Result<()> {
+fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
     let (tx, rx) = std::sync::mpsc::channel();
+    let server = server.clone();
+    let project_dir = project_dir.to_path_buf();
+    let watcher_dir = project_dir.clone();
+    let log_dir = project_dir.clone();
 
     // Create a watcher
     let mut watcher =
@@ -93,12 +97,33 @@ fn setup_file_watching(project_dir: &Path) -> Result<()> {
         })?;
 
     // Watch the project directory
-    watcher.watch(project_dir, RecursiveMode::Recursive)?;
+    watcher.watch(&watcher_dir, RecursiveMode::Recursive)?;
 
-    // Spawn a thread to handle file change events
+    // Keep track of the watcher to prevent it from being dropped
     std::thread::spawn(move || {
+        let _watcher = watcher; // Keep watcher alive
+        let pdir = project_dir; // Create a new binding for the project directory
+
         for event in rx {
             debug!("File change event: {:?}", event);
+
+            let paths = event.paths.iter().map(|p| {
+                p.strip_prefix(&pdir)
+                    .unwrap_or(p)
+                    .to_string_lossy()
+                    .into_owned()
+            }).collect::<Vec<_>>();
+
+            // Send the file change event to all connected clients
+            let message = serde_json::json!({
+                "type": "fileChange",
+                "paths": paths,
+                "kind": format!("{:?}", event.kind)
+            }).to_string();
+
+            if let Err(e) = server.broadcast_update(message) {
+                error!("Failed to broadcast file change: {}", e);
+            }
 
             // Determine if we should rebuild
             let should_rebuild = event.paths.iter().any(|path| {
@@ -111,11 +136,31 @@ fn setup_file_watching(project_dir: &Path) -> Result<()> {
                     "{} project due to file changes",
                     style("Rebuilding").bold().yellow()
                 );
-                // In a real implementation, we would trigger a rebuild here
+                
+                // Send rebuild event to clients
+                let message = serde_json::json!({
+                    "type": "rebuild",
+                    "status": "started"
+                }).to_string();
+                
+                if let Err(e) = server.broadcast_update(message) {
+                    error!("Failed to broadcast rebuild start: {}", e);
+                }
+                
+                // Here we would trigger the actual rebuild
+                // For now, just simulate a rebuild completion
+                let message = serde_json::json!({
+                    "type": "rebuild",
+                    "status": "completed"
+                }).to_string();
+                
+                if let Err(e) = server.broadcast_update(message) {
+                    error!("Failed to broadcast rebuild completion: {}", e);
+                }
             }
         }
     });
 
-    info!("File watching set up for {:?}", project_dir);
+    info!("File watching set up for {:?}", log_dir);
     Ok(())
 }

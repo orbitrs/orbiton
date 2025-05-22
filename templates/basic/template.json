@@ -3,6 +3,10 @@
     "description": "A basic Orbit UI application template",
     "files": [
         {
+            "path": "index.html",
+            "content": "<!DOCTYPE html>\n<html>\n<head>\n    <title>{{project_name}} - Dev Server</title>\n    <script>\n        // Set up WebSocket connection\n        const port = window.location.port;\n        const wsPort = parseInt(port) + 1;\n        const ws = new WebSocket(`ws://localhost:${wsPort}`);\n\n        ws.onopen = () => {\n            console.log('WebSocket connection established');\n        };\n\n        ws.onmessage = (event) => {\n            const data = JSON.parse(event.data);\n            console.log('Received:', data);\n\n            switch (data.type) {\n                case 'fileChange':\n                    console.log('Files changed:', data.paths);\n                    break;\n                case 'rebuild':\n                    if (data.status === 'completed') {\n                        location.reload();\n                    }\n                    break;\n            }\n        };\n\n        ws.onclose = () => {\n            console.log('WebSocket connection closed');\n            // Try to reconnect after a delay\n            setTimeout(() => {\n                location.reload();\n            }, 1000);\n        };\n\n        ws.onerror = (error) => {\n            console.error('WebSocket error:', error);\n        };\n    </script>\n</head>\n<body>\n    <div id=\"app\"></div>\n</body>\n</html>"
+        },
+        {
             "path": "Cargo.toml",
             "content": "[package]\nname = \"{{project_name}}\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[dependencies]\norbitrs = \"0.1.0\"\n"
         },

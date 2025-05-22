@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Orbit Dev Server</title>
+    <script>
+        // Set up WebSocket connection
+        const port = window.location.port;
+        const wsPort = parseInt(port) + 1;
+        const ws = new WebSocket(`ws://localhost:${wsPort}`);
+
+        ws.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log('Received:', data);
+
+            switch (data.type) {
+                case 'fileChange':
+                    console.log('Files changed:', data.paths);
+                    break;
+                case 'rebuild':
+                    if (data.status === 'completed') {
+                        location.reload();
+                    }
+                    break;
+            }
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket connection closed');
+            // Try to reconnect after a delay
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+    </script>
+</head>
+<body>
+    <div id="app"></div>
+</body>
+</html>

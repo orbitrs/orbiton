@@ -82,7 +82,10 @@ jobs:
         
       - name: Run clippy
         working-directory: orbitrs-workspace/orbiton
-        run: cargo clippy --all-targets --all-features -- -D warnings
+        run: |
+          # Temporarily update Cargo.toml for CI environment
+          sed -i 's/default = \["local-dependencies"\]/default = \["ci"\]/g' Cargo.toml
+          cargo clippy --all-targets --all-features -- -D warnings
         
   test:
     name: Test
@@ -139,7 +142,10 @@ jobs:
             
       - name: Run tests
         working-directory: orbitrs-workspace/orbiton
-        run: cargo test --all-features
+        run: |
+          # Temporarily update Cargo.toml for CI environment
+          sed -i 's/default = \["local-dependencies"\]/default = \["ci"\]/g' Cargo.toml
+          cargo test --all-features
         
   security-audit:
     name: Security Audit
@@ -162,7 +168,10 @@ jobs:
       
       - name: Run security audit
         working-directory: orbitrs-workspace/orbiton
-        run: cargo audit
+        run: |
+          # Temporarily update Cargo.toml for CI environment
+          sed -i 's/default = \["local-dependencies"\]/default = \["ci"\]/g' Cargo.toml
+          cargo audit
         
   outdated-dependencies:
     name: Check Outdated Dependencies
@@ -200,4 +209,7 @@ jobs:
       
       - name: Check for outdated dependencies
         working-directory: orbitrs-workspace/orbiton
-        run: cargo outdated --exit-code 0
+        run: |
+          # Temporarily update Cargo.toml for CI environment
+          sed -i 's/default = \["local-dependencies"\]/default = \["ci"\]/g' Cargo.toml
+          cargo outdated --exit-code 0
