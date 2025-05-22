@@ -25,6 +25,19 @@ git clone --depth 1 https://github.com/orbitrs/orbit-analyzer.git ../orbitrs-wor
 echo "Configuring dependencies for CI..."
 cd ../orbitrs-workspace/orbiton
 
+# Create proper cargo config
+mkdir -p .cargo
+echo "[patch.\"https://github.com/orbitrs/orbitrs.git\"]" > .cargo/config.toml
+echo "orbitrs = { path = \"../orbitrs\" }" >> .cargo/config.toml
+echo "[patch.\"https://github.com/orbitrs/orbit-analyzer.git\"]" >> .cargo/config.toml
+echo "orbit-analyzer = { path = \"../orbit-analyzer\" }" >> .cargo/config.toml
+
+# Add temporary workspace configuration for formatting
+cp Cargo.toml Cargo.toml.original
+echo -e "[workspace]\nmembers = [\".\"]\n" > Cargo.toml.temp
+cat Cargo.toml.original >> Cargo.toml.temp
+mv Cargo.toml.temp Cargo.toml
+
 # Enable CI feature flag
 if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i '' 's/default = \["local-dependencies"\]/default = ["ci"]/g' Cargo.toml

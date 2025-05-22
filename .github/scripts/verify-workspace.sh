@@ -22,12 +22,17 @@ if [ ! -d "../orbit-analyzer" ]; then
 fi
 
 # Verify Cargo.toml setup
-if ! grep -q '\[patch."https://github.com/orbitrs/orbitrs.git"\]' .cargo/config.toml 2>/dev/null; then
-    echo "Warning: Local patch for orbitrs not found in .cargo/config.toml"
+mkdir -p .cargo
+if [ ! -f ".cargo/config.toml" ] || ! grep -q '\[patch."https://github.com/orbitrs/orbitrs.git"\]' .cargo/config.toml; then
+    echo "Setting up local patch for orbitrs..."
+    echo '[patch."https://github.com/orbitrs/orbitrs.git"]' > .cargo/config.toml
+    echo 'orbitrs = { path = "../orbitrs" }' >> .cargo/config.toml
 fi
 
-if ! grep -q '\[patch."https://github.com/orbitrs/orbit-analyzer.git"\]' .cargo/config.toml 2>/dev/null; then
-    echo "Warning: Local patch for orbit-analyzer not found in .cargo/config.toml"
+if ! grep -q '\[patch."https://github.com/orbitrs/orbit-analyzer.git"\]' .cargo/config.toml; then
+    echo "Setting up local patch for orbit-analyzer..."
+    echo '[patch."https://github.com/orbitrs/orbit-analyzer.git"]' >> .cargo/config.toml
+    echo 'orbit-analyzer = { path = "../orbit-analyzer" }' >> .cargo/config.toml
 fi
 
 echo "Workspace verification completed!"

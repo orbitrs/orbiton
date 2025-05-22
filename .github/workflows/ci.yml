@@ -67,6 +67,21 @@ jobs:
             exit 1
           fi
       
+      # Fix workspace configuration for cargo fmt and clippy
+      - name: Setup workspace configuration
+        working-directory: orbitrs-workspace/orbiton
+        run: |
+          # Setup proper workspace configuration
+          mkdir -p .cargo
+          echo '[patch."https://github.com/orbitrs/orbitrs.git"]' > .cargo/config.toml
+          echo 'orbitrs = { path = "../orbitrs" }' >> .cargo/config.toml
+          echo '[patch."https://github.com/orbitrs/orbit-analyzer.git"]' >> .cargo/config.toml
+          echo 'orbit-analyzer = { path = "../orbit-analyzer" }' >> .cargo/config.toml
+          
+          # Create a temporary workspace configuration
+          cp Cargo.toml Cargo.toml.bak
+          echo -e "[workspace]\nmembers = [\".\"]\n$(cat Cargo.toml)" > Cargo.toml
+      
       - name: Check code formatting
         working-directory: orbitrs-workspace/orbiton
         run: cargo fmt --all -- --check
@@ -74,6 +89,14 @@ jobs:
       - name: Run clippy
         working-directory: orbitrs-workspace/orbiton
         run: cargo clippy --features ci --all-targets -- -D warnings
+        
+      # Restore original Cargo.toml
+      - name: Restore Cargo.toml
+        working-directory: orbitrs-workspace/orbiton
+        run: |
+          if [ -f "Cargo.toml.bak" ]; then
+            mv Cargo.toml.bak Cargo.toml
+          fi
   
   test:
     name: Test
