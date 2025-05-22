@@ -22,9 +22,18 @@ jobs:
     steps:
       # Create a directory structure that matches our local development environment
       # This ensures that relative paths in dependencies work correctly
-      - name: Create workspace directory
-        run: mkdir -p $GITHUB_WORKSPACE/orbitrs-workspace
+      # - name: Create workspace directory
+      #   run: mkdir -p $GITHUB_WORKSPACE/orbitrs-workspace
       
+      # Set up cargo workspace links
+      - name: Set up workspace
+        run: |
+          mkdir -p .cargo
+          echo '[patch.crates-io]' > .cargo/config.toml
+          echo 'orbitrs = { path = "./orbitrs_dep" }' >> .cargo/config.toml
+          echo 'orbit-analyzer = { path = "./orbit-analyzer_dep" }' >> .cargo/config.toml
+      
+      # Checkout orbiton
       - name: Checkout orbiton
         uses: actions/checkout@v4
         with:
