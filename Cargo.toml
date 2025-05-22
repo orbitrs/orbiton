@@ -44,6 +44,12 @@ websocket = "0.26.5"
 ctrlc = "3.4.1"
 open = "5.0.0"
 
+# Testing
+tempfile = "3.8.0"
+
 [[bin]]
 name = "orbiton"
 path = "src/main.rs"
+
+[dev-dependencies]
+tempfile = "3.8.0"

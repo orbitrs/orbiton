@@ -1,0 +1,41 @@
+{
+    "name": "component-library",
+    "description": "Template for creating a reusable Orbit UI component library",
+    "files": [
+        {
+            "path": "Cargo.toml",
+            "content": "[package]\nname = \"{{project_name}}\"\nversion = \"0.1.0\"\nedition = \"2021\"\ndescription = \"A component library for Orbit UI Framework\"\nlicense = \"MIT OR Apache-2.0\"\n\n[dependencies]\norbitrs = \"0.1.0\"\nserde = { version = \"1.0\", features = [\"derive\"] }\n\n[dev-dependencies]\norbiton = \"0.1.0\"\n"
+        },
+        {
+            "path": "src/lib.rs",
+            "content": "//! {{project_name}} - Orbit UI Component Library\n//!\n//! Created: {{generated_date}}\n\nuse orbitrs::prelude::*;\n\nmod components;\n\npub use components::*;\n"
+        },
+        {
+            "path": "src/components/mod.rs",
+            "content": "//! Component exports\n\nmod button;\nmod card;\n\npub use button::Button;\npub use card::Card;\n"
+        },
+        {
+            "path": "src/components/button.orbit",
+            "content": "<template>\n  <button \n    class=\"orbit-button\"\n    :class=\"{ 'primary': variant === 'primary', 'secondary': variant === 'secondary' }\"\n    @click=\"handle_click\"\n  >\n    <slot />\n  </button>\n</template>\n\n<style>\n.orbit-button {\n  padding: 0.5rem 1rem;\n  border-radius: 4px;\n  border: none;\n  cursor: pointer;\n  font-size: 1rem;\n  transition: background-color 0.2s;\n}\n\n.primary {\n  background-color: #3498db;\n  color: white;\n}\n\n.secondary {\n  background-color: #ecf0f1;\n  color: #2c3e50;\n}\n</style>\n\n<code lang=\"rust\">\nuse orbitrs::prelude::*;\n\n#[derive(Props)]\npub struct ButtonProps {\n    pub variant: String,\n    #[prop(default = false)]\n    pub disabled: bool,\n}\n\npub struct Button {\n    props: ButtonProps,\n}\n\nimpl Component for Button {\n    type Props = ButtonProps;\n\n    fn new(props: Self::Props) -> Self {\n        Self { props }\n    }\n\n    fn handle_click(&mut self) {\n        self.emit(\"click\");\n    }\n}\n</code>\n"
+        },
+        {
+            "path": "src/components/card.orbit",
+            "content": "<template>\n  <div class=\"orbit-card\">\n    <div v-if=\"title\" class=\"orbit-card-title\">{{title}}</div>\n    <div class=\"orbit-card-content\">\n      <slot />\n    </div>\n  </div>\n</template>\n\n<style>\n.orbit-card {\n  background: white;\n  border-radius: 8px;\n  box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n  padding: 1rem;\n}\n\n.orbit-card-title {\n  font-size: 1.25rem;\n  font-weight: bold;\n  margin-bottom: 0.5rem;\n}\n</style>\n\n<code lang=\"rust\">\nuse orbitrs::prelude::*;\n\n#[derive(Props)]\npub struct CardProps {\n    #[prop(default = \"\")]\n    pub title: String,\n}\n\npub struct Card {\n    props: CardProps,\n}\n\nimpl Component for Card {\n    type Props = CardProps;\n\n    fn new(props: Self::Props) -> Self {\n        Self { props }\n    }\n}\n</code>\n"
+        },
+        {
+            "path": "examples/demo.rs",
+            "content": "use {{project_name}}::*;\nuse orbitrs::prelude::*;\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let mut app = App::new();\n    \n    app.add_component(Button::new(ButtonProps {\n        variant: \"primary\".to_string(),\n        disabled: false,\n    }));\n\n    app.run()\n}\n"
+        },
+        {
+            "path": "README.md",
+            "content": "# {{project_name}}\n\nA component library for Orbit UI Framework created on {{generated_date}}.\n\n## Components\n\n- `Button`: A customizable button component\n- `Card`: A card container component\n\n## Usage\n\nAdd this to your `Cargo.toml`:\n\n```toml\n[dependencies]\n{{project_name}} = \"0.1.0\"\n```\n\nThen import and use components:\n\n```rust\nuse {{project_name}}::Button;\n```\n\n## Development\n\nTo run the demo:\n\n```bash\ncargo run --example demo\n```\n\n## Documentation\n\nTo generate documentation:\n\n```bash\ncargo doc --open\n```\n"
+        }
+    ],
+    "dependencies": [
+        "orbitrs = \"0.1.0\"",
+        "serde = { version = \"1.0\", features = [\"derive\"] }"
+    ],
+    "dev_dependencies": [
+        "orbiton = \"0.1.0\""
+    ]
+}
