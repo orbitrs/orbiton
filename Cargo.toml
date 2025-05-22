@@ -11,6 +11,8 @@ description = "CLI tooling for the Orbit UI framework ecosystem"
 [dependencies]
 # Core dependencies
 orbitrs = { version = "0.1.0", path = "../orbitrs", optional = true }
+
+# Use normal path for local dev and different path for CI
 orbit-analyzer = { version = "0.1.0", path = "../orbit-analyzer", optional = true }
 
 # CLI libraries
@@ -31,12 +33,23 @@ walkdir = "2.4.0"
 
 [features]
 default = ["local-dependencies"]
-local-dependencies = ["orbitrs", "orbit-analyzer"]
+local-dependencies = ["orbitrs", "orbit-analyzer"] 
 ci = []
 
-# Used when building in CI environments or without local dependencies
+# Patch sections to override dependency sources in different environments
+[patch.crates-io]
+# Empty placeholder for consistency
+
+# Patch GitHub repositories with local paths
+[patch."https://github.com/orbitrs/orbitrs.git"]
+orbitrs = { path = "../orbitrs" }
+
+[patch."https://github.com/orbitrs/orbit-analyzer.git"]
+orbit-analyzer = { path = "../orbit-analyzer" }
+
+# For when we explicitly don't want local dependencies
 [target.'cfg(not(feature = "local-dependencies"))'.dependencies]
-# Empty stubs or mock implementations can be added here if needed
+# Empty stubs or mock implementations for when dependencies aren't available
 
 # Error handling
 thiserror = "1.0"
