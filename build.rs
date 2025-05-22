@@ -36,7 +36,7 @@ fn main() {
         .ancestors()
         .find(|p| {
             p.file_name()
-                .map_or(false, |name| name.to_string_lossy() == profile)
+                .is_some_and(|name| name.to_string_lossy() == profile)
         })
         .expect("Could not find target directory");
 
