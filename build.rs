@@ -43,8 +43,8 @@ fn main() {
     println!("cargo:rerun-if-changed=templates");
 
     // Create target templates directory
-    fs::create_dir_all(&target_templates_dir).unwrap();
+    fs::create_dir_all(target_templates_dir).unwrap();
 
     // Copy templates recursively
-    copy_dir_recursively(&templates_dir, &target_templates_dir).unwrap();
+    copy_dir_recursively(&templates_dir, target_templates_dir).unwrap();
 }
