@@ -33,14 +33,14 @@ else
     git pull
 fi
 
-# Check if orbit-analyzer repository exists
-if [[ ! -d "$WORKSPACE_DIR/orbit-analyzer" ]]; then
-    echo -e "${YELLOW}orbit-analyzer repository not found. Cloning...${NC}"
+# Check if orlint repository exists
+if [[ ! -d "$WORKSPACE_DIR/orlint" ]]; then
+    echo -e "${YELLOW}orlint repository not found. Cloning...${NC}"
     cd "$WORKSPACE_DIR"
-    git clone https://github.com/orbitrs/orbit-analyzer.git
+    git clone https://github.com/orbitrs/orlint.git
 else
-    echo -e "${GREEN}orbit-analyzer repository found.${NC}"
-    cd "$WORKSPACE_DIR/orbit-analyzer"
+    echo -e "${GREEN}orlint repository found.${NC}"
+    cd "$WORKSPACE_DIR/orlint"
     git pull
 fi
 
@@ -63,7 +63,7 @@ if [[ ! -f "$ORBITON_DIR/.cargo/config.toml" ]]; then
 [patch.crates-io]
 # Use local versions of dependencies when available
 orbitrs = { path = "../orbitrs" }
-orbit-analyzer = { path = "../orbit-analyzer" }
+orlint = { path = "../orlint" }
 EOL
     echo -e "${GREEN}.cargo/config.toml created.${NC}"
 else

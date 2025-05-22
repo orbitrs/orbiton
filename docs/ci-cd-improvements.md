@@ -7,7 +7,7 @@ This document outlines the improvements made to the CI/CD workflows for the orbi
 ### CI Workflow Improvements
 - Replaced the reusable workflow with a custom workflow tailored for orbiton's dependency structure
 - Implemented a proper workspace directory structure that matches local development
-- Added explicit checkout of all needed dependencies (orbitrs and orbit-analyzer)
+- Added explicit checkout of all needed dependencies (orbitrs and orlint)
 - Implemented cross-platform testing with a matrix strategy for Linux, Windows, and macOS
 - Added job timeouts to prevent workflow runs from hanging indefinitely
 - Added security audit job to identify security vulnerabilities
@@ -46,7 +46,7 @@ For local development, ensure you have the following directory structure:
 /your-workspace/
 ├── orbiton/
 ├── orbitrs/
-└── orbit-analyzer/
+└── orlint/
 ```
 
 This structure matches what's used in CI and ensures that all dependencies can be found.

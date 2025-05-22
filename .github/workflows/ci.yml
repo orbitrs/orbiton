@@ -32,17 +32,17 @@ jobs:
         with:
           path: orbitrs-workspace/orbiton
       
-      - name: Checkout orbitrs
+      - name: Checkout orbitui
         uses: actions/checkout@v4
         with:
-          repository: orbitrs/orbitrs
-          path: orbitrs-workspace/orbitrs
+          repository: orbitrs/orbitui
+          path: orbitrs-workspace/orbitui
       
-      - name: Checkout orbit-analyzer
+      - name: Checkout orlint
         uses: actions/checkout@v4
         with:
-          repository: orbitrs/orbit-analyzer
-          path: orbitrs-workspace/orbit-analyzer
+          repository: orbitrs/orlint
+          path: orbitrs-workspace/orlint
           
       - name: Install system dependencies
         run: |
@@ -73,10 +73,10 @@ jobs:
         run: |
           # Setup proper workspace configuration
           mkdir -p .cargo
-          echo '[patch."https://github.com/orbitrs/orbitrs.git"]' > .cargo/config.toml
-          echo 'orbitrs = { path = "../orbitrs" }' >> .cargo/config.toml
-          echo '[patch."https://github.com/orbitrs/orbit-analyzer.git"]' >> .cargo/config.toml
-          echo 'orbit-analyzer = { path = "../orbit-analyzer" }' >> .cargo/config.toml
+          echo '[patch."https://github.com/orbitrs/orbitui.git"]' > .cargo/config.toml
+          echo 'orbitui = { path = "../orbitui" }' >> .cargo/config.toml
+          echo '[patch."https://github.com/orbitrs/orlint.git"]' >> .cargo/config.toml
+          echo 'orlint = { path = "../orlint" }' >> .cargo/config.toml
           
           # Create a temporary workspace configuration
           cp Cargo.toml Cargo.toml.bak
@@ -127,17 +127,17 @@ jobs:
         with:
           path: orbitrs-workspace/orbiton
       
-      - name: Checkout orbitrs
+      - name: Checkout orbitui
         uses: actions/checkout@v4
         with:
-          repository: orbitrs/orbitrs
-          path: orbitrs-workspace/orbitrs
+          repository: orbitrs/orbitui
+          path: orbitrs-workspace/orbitui
           
-      - name: Checkout orbit-analyzer
+      - name: Checkout orlint
         uses: actions/checkout@v4
         with:
-          repository: orbitrs/orbit-analyzer
-          path: orbitrs-workspace/orbit-analyzer
+          repository: orbitrs/orlint
+          path: orbitrs-workspace/orlint
       
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -197,17 +197,17 @@ jobs:
         with:
           path: orbitrs-workspace/orbiton
       
-      - name: Checkout orbitrs
+      - name: Checkout orbitui
         uses: actions/checkout@v4
         with:
-          repository: orbitrs/orbitrs
-          path: orbitrs-workspace/orbitrs
+          repository: orbitrs/orbitui
+          path: orbitrs-workspace/orbitui
           
-      - name: Checkout orbit-analyzer
+      - name: Checkout orlint
         uses: actions/checkout@v4
         with:
-          repository: orbitrs/orbit-analyzer
-          path: orbitrs-workspace/orbit-analyzer
+          repository: orbitrs/orlint
+          path: orbitrs-workspace/orlint
       
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable

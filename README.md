@@ -21,7 +21,7 @@ Whether you're scaffolding a new component, starting a development server, or co
 * 📊 Performance profiler: `orbiton profile`
 * 🎨 Renderer configuration: `orbiton renderer` (Skia/WGPU/Auto)
 * 🧪 Component test utilities (planned)
-* 🔍 Analyzer integration: `orbiton lint` (via [orbit-analyzer](https://github.com/orbitrs/orbit-analyzer))
+* 🔍 Analyzer integration: `orbiton lint` (via [orlint](https://github.com/orbitrs/orlint))
 
 ---
 
@@ -45,7 +45,7 @@ cd orbit-workspace
 # Clone all required repositories
 git clone https://github.com/orbitrs/orbiton.git
 git clone https://github.com/orbitrs/orbitrs.git
-git clone https://github.com/orbitrs/orbit-analyzer.git
+git clone https://github.com/orbitrs/orlint.git
 
 # Or use our setup script
 cd orbiton

@@ -11,7 +11,7 @@ echo "🔍 Verifying Orbiton workspace configuration..."
 
 # Define expected paths
 ORBITRS_PATH="../orbitrs"
-ANALYZER_PATH="../orbit-analyzer"
+ANALYZER_PATH="../orlint"
 
 # Check for Cargo.toml
 if [[ ! -f "$REPO_ROOT/Cargo.toml" ]]; then
@@ -35,9 +35,9 @@ if ! grep -q "orbitrs = " "$REPO_ROOT/Cargo.toml"; then
     exit 1
 fi
 
-# Check for orbit-analyzer dependency
-if ! grep -q "orbit-analyzer = " "$REPO_ROOT/Cargo.toml"; then
-    echo "❌ Error: orbit-analyzer dependency not found in Cargo.toml"
+# Check for orlint dependency
+if ! grep -q "orlint = " "$REPO_ROOT/Cargo.toml"; then
+    echo "❌ Error: orlint dependency not found in Cargo.toml"
     exit 1
 fi
 
@@ -64,9 +64,9 @@ else
 fi
 
 if [[ ! -d "$REPO_ROOT/$ANALYZER_PATH" ]]; then
-    echo "⚠️ Warning: orbit-analyzer repository not found at $ANALYZER_PATH"
+    echo "⚠️ Warning: orlint repository not found at $ANALYZER_PATH"
 else
-    echo "✅ orbit-analyzer repository found at $ANALYZER_PATH"
+    echo "✅ orlint repository found at $ANALYZER_PATH"
 fi
 
 # Check for tempfile with explicit version

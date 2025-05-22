@@ -17,10 +17,10 @@ fi
 if [ ! -f ".cargo/config.toml" ]; then
     echo "Setting up cargo config..."
     mkdir -p .cargo
-    echo '[patch."https://github.com/orbitrs/orbitrs.git"]' > .cargo/config.toml
-    echo 'orbitrs = { path = "../orbitrs" }' >> .cargo/config.toml
-    echo '[patch."https://github.com/orbitrs/orbit-analyzer.git"]' >> .cargo/config.toml
-    echo 'orbit-analyzer = { path = "../orbit-analyzer" }' >> .cargo/config.toml
+    echo '[patch."https://github.com/orbitrs/orbitui.git"]' > .cargo/config.toml
+    echo 'orbitui = { path = "../orbitui" }' >> .cargo/config.toml
+    echo '[patch."https://github.com/orbitrs/orlint.git"]' >> .cargo/config.toml
+    echo 'orlint = { path = "../orlint" }' >> .cargo/config.toml
 fi
 
 # Temporarily add workspace config if needed

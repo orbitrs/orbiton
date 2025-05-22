@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Commands for project scaffolding (`orbiton new`)
 - Development server with auto-refresh (`orbiton dev`)
 - Build command with output optimization (`orbiton build`)
-- Integration with orbit-analyzer for linting
+- Integration with orlint for linting
 
 ### Fixed
 - Improved error messages and handling

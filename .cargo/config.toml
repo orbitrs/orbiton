@@ -2,5 +2,5 @@
 [patch."https://github.com/orbitrs/orbitrs.git"]
 orbitrs = { path = "../orbitrs" }
 
-[patch."https://github.com/orbitrs/orbit-analyzer.git"]
-orbit-analyzer = { path = "../orbit-analyzer" }
+[patch."https://github.com/orbitrs/orlint.git"]
+orlint = { path = "../orlint" }

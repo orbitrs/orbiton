@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Orbit Team <orbit@example.com>"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/orbitrs/orbitrs"
+repository = "https://github.com/orbitrs/orbiton"
 readme = "README.md"
 description = "CLI tooling for the Orbit UI framework ecosystem"
 
@@ -15,8 +15,8 @@ ci = []
 
 [dependencies]
 # Core dependencies
-orbitrs.workspace = true
-orbit-analyzer.workspace = true
+orbitui.workspace = true
+orlint.workspace = true
 
 # CLI libraries
 clap = { version = "4.4", features = ["derive", "std"], default-features = false }

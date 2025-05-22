@@ -6,7 +6,7 @@ This document explains how dependencies are managed in the Orbiton project, part
 
 Orbiton has two primary dependencies:
 - `orbitrs`: The core Orbit UI framework
-- `orbit-analyzer`: Static analysis tool for Orbit UI files
+- `orlint`: Static analysis tool for Orbit UI files
 
 These dependencies are referenced in different ways depending on the environment:
 
@@ -21,7 +21,7 @@ In a local development environment:
 # In Cargo.toml
 [dependencies]
 orbitrs = { git = "https://github.com/orbitrs/orbitrs.git", branch = "main" }
-orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git", branch = "main" }
+orlint = { git = "https://github.com/orbitrs/orlint.git", branch = "main" }
 
 [features]
 default = ["local-dependencies"]
@@ -32,8 +32,8 @@ ci = []
 [patch."https://github.com/orbitrs/orbitrs.git"]
 orbitrs = { path = "../orbitrs" }
 
-[patch."https://github.com/orbitrs/orbit-analyzer.git"]
-orbit-analyzer = { path = "../orbit-analyzer" }
+[patch."https://github.com/orbitrs/orlint.git"]
+orlint = { path = "../orlint" }
 ```
 
 ## CI Environment
@@ -59,13 +59,13 @@ When encountering CI issues related to dependencies:
    orbitrs-workspace/
    ├── orbiton/
    ├── orbitrs/
-   └── orbit-analyzer/  (or /tmp/orbit-analyzer in some CI configs)
+   └── orlint/  (or /tmp/orlint in some CI configs)
    ```
 
 3. **Feature Issues**: Don't include dependencies in features directly
    ```toml
    # DON'T do this:
-   local-dependencies = ["orbitrs", "orbit-analyzer"]
+   local-dependencies = ["orbitrs", "orlint"]
    
    # DO this instead:
    local-dependencies = []
@@ -76,7 +76,7 @@ When encountering CI issues related to dependencies:
 Several scripts help maintain the correct dependency configuration:
 
 - `orbit-workflows/scripts/setup-ci-workspace.sh`: Sets up the CI workspace structure
-- `orbit-workflows/scripts/fix-orbit-analyzer-dependency.sh`: Fixes the orbit-analyzer dependency
+- `orbit-workflows/scripts/fix-orlint-dependency.sh`: Fixes the orlint dependency
 - `orbit-workflows/scripts/ci-update-features.sh`: Updates feature flags for CI
 
 ## Testing Locally
@@ -89,7 +89,7 @@ mkdir -p orbitrs-workspace
 cd orbitrs-workspace
 git clone https://github.com/orbitrs/orbiton.git
 git clone https://github.com/orbitrs/orbitrs.git
-git clone https://github.com/orbitrs/orbit-analyzer.git
+git clone https://github.com/orbitrs/orlint.git
 
 # Run the CI setup script
 cd orbiton
