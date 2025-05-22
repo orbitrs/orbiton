@@ -10,10 +10,11 @@ description = "CLI tooling for the Orbit UI framework ecosystem"
 
 [dependencies]
 # Core dependencies
+# In local development, this will be overridden by the patch section in .cargo/config.toml
 orbitrs = { git = "https://github.com/orbitrs/orbitrs.git", branch = "main" }
 
 # Use normal path for local dev and different path for CI
-orbit-analyzer = { version = "0.1.0", path = "../orbit-analyzer" }
+orbit-analyzer = { git = "https://github.com/orbitrs/orbit-analyzer.git", branch = "main" }
 
 # CLI libraries
 clap = { version = "4.4", features = ["derive", "std"], default-features = false }
@@ -48,6 +49,9 @@ futures-util = "0.3"  # For WebSocket stream utilities
 ctrlc = "3.4.1"
 open = "5.0.0"
 
+# Testing
+tempfile = "3.8.0"
+
 [features]
 default = ["local-dependencies"]
 local-dependencies = []
@@ -63,9 +67,6 @@ orbitrs = { path = "../orbitrs" }
 
 [patch."https://github.com/orbitrs/orbit-analyzer.git"]
 orbit-analyzer = { path = "../orbit-analyzer" }
-
-# Testing
-tempfile = "3.8.0"
 
 [[bin]]
 name = "orbiton"

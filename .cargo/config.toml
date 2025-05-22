@@ -1,2 +1,6 @@
+# For local development, override the git dependencies with local paths
 [patch."https://github.com/orbitrs/orbitrs.git"]
 orbitrs = { path = "../orbitrs" }
+
+[patch."https://github.com/orbitrs/orbit-analyzer.git"]
+orbit-analyzer = { path = "../orbit-analyzer" }

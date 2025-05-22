@@ -56,10 +56,11 @@ cd orbiton
 
 `orbiton` uses a feature-based system to manage its dependencies:
 
-- In development, the `local-dependencies` feature (default) uses local paths for dependencies
+- Dependencies are specified as git URLs in the Cargo.toml file
+- In local development, the `local-dependencies` feature (default) activates
 - In CI environments, the `ci` feature is used
-- Dependencies are managed through git source references with local path overrides
-- The patch system in Cargo.toml and .cargo/config.toml handles dependency resolution
+- The patch system in Cargo.toml and .cargo/config.toml overrides git dependencies with local paths
+- This two-tier approach ensures consistent behavior between local development and CI
 
 ```bash
 # 💻 Usage
