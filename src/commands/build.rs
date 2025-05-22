@@ -78,7 +78,7 @@ pub fn execute(args: BuildArgs) -> Result<()> {
         None => {
             let mut dir = project_dir.clone();
             dir.push("build");
-            dir.push(&target.to_string());
+            dir.push(target.to_string());
             dir
         }
     };
@@ -216,7 +216,6 @@ fn find_orbit_files(dir: &Path) -> Result<Vec<PathBuf>> {
     let mut files = Vec::new();
     for entry in walkdir::WalkDir::new(dir) {
         let entry = entry.context("Failed to read directory entry")?;
-        // if entry.path().extension().map_or(false, |ext| ext == "orbit") {
         if entry.path().extension().is_some_and(|ext| ext == "orbit") {
             files.push(entry.path().to_path_buf());
         }
@@ -224,7 +223,7 @@ fn find_orbit_files(dir: &Path) -> Result<Vec<PathBuf>> {
     Ok(files)
 }
 
-fn generate_rust_code(orbit_files: &[PathBuf], output_dir: &Path) -> Result<()> {
+fn generate_rust_code(_orbit_files: &[PathBuf], _output_dir: &Path) -> Result<()> {
     // Placeholder: In a real implementation, this would:
     // 1. Parse each .orbit file
     // 2. Generate corresponding Rust code
@@ -233,7 +232,7 @@ fn generate_rust_code(orbit_files: &[PathBuf], output_dir: &Path) -> Result<()> 
     Ok(())
 }
 
-fn compile_to_wasm(output_dir: &Path, release: bool) -> Result<()> {
+fn compile_to_wasm(_output_dir: &Path, _release: bool) -> Result<()> {
     // Placeholder: In a real implementation, this would:
     // 1. Set up wasm-pack or similar tool
     // 2. Run the compilation process

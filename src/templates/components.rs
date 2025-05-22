@@ -21,6 +21,7 @@ pub struct Component {
     pub description: String,
 }
 
+#[allow(dead_code)]
 impl Component {
     pub fn new(
         name: String,
