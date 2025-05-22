@@ -8,6 +8,11 @@ repository = "https://github.com/orbitrs/orbitrs"
 readme = "README.md"
 description = "CLI tooling for the Orbit UI framework ecosystem"
 
+[features]
+default = ["local-dependencies"]
+local-dependencies = []
+ci = []
+
 [dependencies]
 # Core dependencies
 orbitrs.workspace = true

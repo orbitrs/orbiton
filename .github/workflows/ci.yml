@@ -20,12 +20,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      # Checkout main repository with submodules
-      - name: Checkout repository
+      # Create workspace directory
+      - name: Create workspace directory
+        run: |
+          mkdir -p orbitrs-workspace
+      
+      # Checkout orbiton
+      - name: Checkout orbiton
         uses: actions/checkout@v4
         with:
+          path: orbitrs-workspace/orbiton
           fetch-depth: 1
-          submodules: true
+
+      # Checkout dependencies
+      - name: Checkout orbitrs
+        uses: actions/checkout@v4
+        with:
+          repository: orbitrs/orbitrs
+          path: orbitrs-workspace/orbitrs
+          
+      - name: Checkout orbit-analyzer
+        uses: actions/checkout@v4
+        with:
+          repository: orbitrs/orbit-analyzer
+          path: orbitrs-workspace/orbit-analyzer
           
       - name: Install system dependencies
         run: |
@@ -42,6 +60,8 @@ jobs:
         with:
           workspaces: |
             orbitrs-workspace/orbiton -> target
+            orbitrs-workspace/orbitrs -> target
+            orbitrs-workspace/orbit-analyzer -> target
             
       - name: Verify dependency paths
         run: |
@@ -66,7 +86,9 @@ jobs:
         
       - name: Run clippy
         working-directory: orbitrs-workspace/orbiton
-        run: cargo clippy --all-targets --all-features -- -D warnings
+        run: |
+          # Use CI feature to handle dependency paths in CI environment
+          cargo clippy --features ci --all-targets -- -D warnings
         
   test:
     name: Test
@@ -124,9 +146,8 @@ jobs:
       - name: Run tests
         working-directory: orbitrs-workspace/orbiton
         run: |
-          # Temporarily update Cargo.toml for CI environment
-          sed -i 's/default = \["local-dependencies"\]/default = \["ci"\]/g' Cargo.toml
-          cargo test --all-features
+          # Use CI feature instead of all-features
+          cargo test --features ci
         
   security-audit:
     name: Security Audit
@@ -150,9 +171,8 @@ jobs:
       - name: Run security audit
         working-directory: orbitrs-workspace/orbiton
         run: |
-          # Temporarily update Cargo.toml for CI environment
-          sed -i 's/default = \["local-dependencies"\]/default = \["ci"\]/g' Cargo.toml
-          cargo audit
+          # Use CI feature for dependency resolution
+          cargo audit --features ci
         
   outdated-dependencies:
     name: Check Outdated Dependencies
@@ -191,6 +211,5 @@ jobs:
       - name: Check for outdated dependencies
         working-directory: orbitrs-workspace/orbiton
         run: |
-          # Temporarily update Cargo.toml for CI environment
-          sed -i 's/default = \["local-dependencies"\]/default = \["ci"\]/g' Cargo.toml
-          cargo outdated --exit-code 0
+          # Use CI feature for dependency resolution
+          cargo outdated --features ci --exit-code 0
