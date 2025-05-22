@@ -216,7 +216,8 @@ fn find_orbit_files(dir: &Path) -> Result<Vec<PathBuf>> {
     let mut files = Vec::new();
     for entry in walkdir::WalkDir::new(dir) {
         let entry = entry.context("Failed to read directory entry")?;
-        if entry.path().extension().map_or(false, |ext| ext == "orbit") {
+        // if entry.path().extension().map_or(false, |ext| ext == "orbit") {
+        if entry.path().extension().is_some_and(|ext| ext == "orbit") {
             files.push(entry.path().to_path_buf());
         }
     }
