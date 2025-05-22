@@ -18,6 +18,8 @@ This document outlines the improvements made to the CI/CD workflows for the orbi
 ### Dependency Structure
 - Added `.cargo/config.toml` to ensure consistent dependency resolution in both local and CI environments
 - Added verification steps to confirm dependencies are found in expected locations
+- Modified feature handling to eliminate dependency conflicts between local development and CI environments
+- Simplified feature declarations to avoid Cargo errors in CI environment
 
 ## CI Workflow Structure
 

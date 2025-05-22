@@ -13,7 +13,7 @@ description = "CLI tooling for the Orbit UI framework ecosystem"
 orbitrs = { git = "https://github.com/orbitrs/orbitrs.git", branch = "main" }
 
 # Use normal path for local dev and different path for CI
-orbit-analyzer = { version = "0.1.0", path = "../orbit-analyzer", optional = true }
+orbit-analyzer = { version = "0.1.0", path = "../orbit-analyzer" }
 
 # CLI libraries
 clap = { version = "4.4", features = ["derive", "std"], default-features = false }
@@ -31,26 +31,6 @@ serde_yaml = "0.9.27"
 # Filesystem operations
 walkdir = "2.4.0"
 
-[features]
-default = ["local-dependencies"]
-local-dependencies = ["orbitrs", "orbit-analyzer"] 
-ci = []
-
-# Patch sections to override dependency sources in different environments
-[patch.crates-io]
-# Empty placeholder for consistency
-
-# Patch GitHub repositories with local paths
-[patch."https://github.com/orbitrs/orbitrs.git"]
-orbitrs = { path = "../orbitrs" }
-
-[patch."https://github.com/orbitrs/orbit-analyzer.git"]
-orbit-analyzer = { path = "../orbit-analyzer" }
-
-# For when we explicitly don't want local dependencies
-[target.'cfg(not(feature = "local-dependencies"))'.dependencies]
-# Empty stubs or mock implementations for when dependencies aren't available
-
 # Error handling
 thiserror = "1.0"
 log = "0.4"
@@ -67,6 +47,22 @@ futures-util = "0.3"  # For WebSocket stream utilities
 # Process handling
 ctrlc = "3.4.1"
 open = "5.0.0"
+
+[features]
+default = ["local-dependencies"]
+local-dependencies = []
+ci = []
+
+# Patch sections to override dependency sources in different environments
+[patch.crates-io]
+# Empty placeholder for consistency
+
+# Patch GitHub repositories with local paths
+[patch."https://github.com/orbitrs/orbitrs.git"]
+orbitrs = { path = "../orbitrs" }
+
+[patch."https://github.com/orbitrs/orbit-analyzer.git"]
+orbit-analyzer = { path = "../orbit-analyzer" }
 
 # Testing
 tempfile = "3.8.0"
