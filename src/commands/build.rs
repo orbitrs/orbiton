@@ -57,9 +57,15 @@ pub fn execute(args: BuildArgs) -> Result<()> {
 
     // Execute appropriate build command based on target
     match args.target.as_str() {
-        "web" => build_for_web(project_dir.as_path(), output_dir.as_path(), args.release)?,
-        "desktop" => build_for_desktop(project_dir.as_path(), output_dir.as_path(), args.release)?,
-        "embedded" => build_for_embedded(project_dir.as_path(), output_dir.as_path(), args.release)?,
+        "web" => {
+            build_for_web(project_dir.as_path(), output_dir.as_path(), args.release)?
+        }
+        "desktop" => {
+            build_for_desktop(project_dir.as_path(), output_dir.as_path(), args.release)?
+        }
+        "embedded" => {
+            build_for_embedded(project_dir.as_path(), output_dir.as_path(), args.release)?
+        }
         _ => {
             return Err(anyhow::anyhow!("Unsupported target: {}", args.target));
         }
