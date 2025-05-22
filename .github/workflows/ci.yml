@@ -20,31 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      # Create a directory structure that matches our local development environment
-      # This ensures that relative paths in dependencies work correctly
-      # - name: Create workspace directory
-      #   run: mkdir -p $GITHUB_WORKSPACE/orbitrs-workspace
-      
-      # No manual workspace setup needed - using Cargo workspace
-      
-      # Checkout orbiton
-      - name: Checkout orbiton
+      # Checkout main repository with submodules
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          path: orbitrs-workspace/orbiton
-      
-      # Checkout dependencies
-      - name: Checkout orbitrs
-        uses: actions/checkout@v4
-        with:
-          repository: orbitrs/orbitrs
-          path: orbitrs-workspace/orbitrs
-          
-      - name: Checkout orbit-analyzer
-        uses: actions/checkout@v4
-        with:
-          repository: orbitrs/orbit-analyzer
-          path: orbitrs-workspace/orbit-analyzer
+          fetch-depth: 1
+          submodules: true
           
       - name: Install system dependencies
         run: |

@@ -10,8 +10,8 @@ description = "CLI tooling for the Orbit UI framework ecosystem"
 
 [dependencies]
 # Core dependencies
-orbitrs = { path = "../orbitrs" }
-orbit-analyzer = { path = "../orbit-analyzer" }
+orbitrs.workspace = true
+orbit-analyzer.workspace = true
 
 # CLI libraries
 clap = { version = "4.4", features = ["derive", "std"], default-features = false }
