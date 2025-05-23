@@ -1,6 +1,7 @@
 # For local development, override the git dependencies with local paths
-[patch."https://github.com/orbitrs/orbitrs.git"]
-orbitrs = { path = "../orbitrs" }
+# Comment out non-existent orbitrs repo reference for CI compatibility
+# [patch."https://github.com/orbitrs/orbitrs.git"]
+# orbitrs = { path = "../orbitrs" }
 
 [patch."https://github.com/orbitrs/orlint.git"]
 orlint = { path = "../orlint" }

@@ -15,8 +15,8 @@ ci = []
 
 [dependencies]
 # Core dependencies
-orbit.workspace = true
-orlint.workspace = true
+orbit = { path = "../orbit" }
+orlint = { path = "../orlint" }
 
 # CLI libraries
 clap = { version = "4.4", features = ["derive", "std"], default-features = false }

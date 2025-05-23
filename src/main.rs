@@ -39,6 +39,9 @@ enum Commands {
 
     /// Configure the renderer
     Renderer(commands::renderer::RendererArgs),
+    
+    /// Run tests for the project
+    Test(commands::test::TestCommand),
 }
 
 fn main() -> anyhow::Result<()> {
@@ -68,6 +71,9 @@ fn main() -> anyhow::Result<()> {
         }
         Commands::Renderer(args) => {
             commands::renderer::execute(args)?;
+        }
+        Commands::Test(args) => {
+            args.execute()?;
         }
     }
 
