@@ -1,5 +1,10 @@
 # 📦 `orbiton` — CLI Tooling for Orbit Framework
 
+![CI Status](https://github.com/orbitrs/orbiton/actions/workflows/ci.yml/badge.svg)
+![Release Status](https://github.com/orbitrs/orbiton/actions/workflows/release.yml/badge.svg)
+[![codecov](https://codecov.io/gh/orbitrs/orbiton/branch/main/graph/badge.svg?token=CODECOV_TOKEN)](https://codecov.io/gh/orbitrs/orbiton)
+[![crates.io](https://img.shields.io/crates/v/orbiton.svg)](https://crates.io/crates/orbiton)
+
 > **Command-line interface to build, develop, and manage Orbit applications.**
 
 ---
