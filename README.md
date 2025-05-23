@@ -89,7 +89,7 @@ orbiton renderer --config auto      # Configure automatic renderer selection
 * [ ] Target switching (Web, Native, Embedded)
 * [ ] Preview mode for single components with renderer selection
 * [ ] Integrated formatter
-* [ ] OrbitKit component sync
+* [ ] Orbit component library sync
 * [ ] Orbit playground launcher
 * [ ] Performance analyzer for renderer optimization
 * [ ] Visual renderer debugging tools
