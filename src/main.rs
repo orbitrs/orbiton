@@ -39,7 +39,7 @@ enum Commands {
 
     /// Configure the renderer
     Renderer(commands::renderer::RendererArgs),
-    
+
     /// Run tests for the project
     Test(commands::test::TestCommand),
 }

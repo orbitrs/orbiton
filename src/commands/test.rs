@@ -1,8 +1,8 @@
 //! Implementation of the `orbiton test` command.
 
-use std::path::PathBuf;
-use clap::Parser;
 use anyhow::Result;
+use clap::Parser;
+use std::path::PathBuf;
 
 /// Command line arguments for the `test` command.
 #[derive(Parser)]
@@ -47,28 +47,40 @@ pub struct TestCommand {
 impl TestCommand {
     /// Execute the test command.
     pub fn execute(&self) -> Result<()> {
-        use std::process::Command;
         use console::style;
+        use std::process::Command;
 
         // Get the project directory (current directory if not specified)
-        let project_dir = self.project_dir.clone().unwrap_or_else(|| std::env::current_dir().unwrap());
-        
-        println!("{} Looking for tests in {}", 
+        let project_dir = self
+            .project_dir
+            .clone()
+            .unwrap_or_else(|| std::env::current_dir().unwrap());
+
+        println!(
+            "{} Looking for tests in {}",
             style("[1/4]").bold().dim(),
-            style(project_dir.display()).underlined());
+            style(project_dir.display()).underlined()
+        );
 
         // Check if this is an Orbit project by looking for specific files
-        let is_orbit_project = std::fs::metadata(project_dir.join("orbit.config.toml")).is_ok() || 
-                               std::fs::metadata(project_dir.join("Cargo.toml")).is_ok();
+        let is_orbit_project = std::fs::metadata(project_dir.join("orbit.config.toml")).is_ok()
+            || std::fs::metadata(project_dir.join("Cargo.toml")).is_ok();
 
         if !is_orbit_project {
-            println!("⚠️  {} This directory does not appear to be an Orbit project.", 
-                     style("Warning:").yellow().bold());
+            println!(
+                "⚠️  {} This directory does not appear to be an Orbit project.",
+                style("Warning:").yellow().bold()
+            );
             println!("   Looking for orbit.config.toml or Cargo.toml...");
         }
-        
+
         // Since this is a planned future feature, print a message but also try to run standard Rust tests
-        println!("\n{}", style("🚧 The `orbiton test` command is under active development.").yellow().bold());
+        println!(
+            "\n{}",
+            style("🚧 The `orbiton test` command is under active development.")
+                .yellow()
+                .bold()
+        );
         println!("Some advanced testing features are planned for future releases.");
         println!();
         println!("{}:", style("Planned features").bold());
@@ -78,13 +90,16 @@ impl TestCommand {
         println!(" • Coverage reporting");
         println!(" • Snapshot testing");
         println!(" • Watch mode for test-driven development");
-        
+
         // Check for testing flags and run appropriate test commands
-        println!("\n{} Running tests with current implementation:", style("[2/4]").bold().dim());
-        
+        println!(
+            "\n{} Running tests with current implementation:",
+            style("[2/4]").bold().dim()
+        );
+
         // Build the cargo test command based on provided flags
         let mut cmd_args = vec!["test"];
-        
+
         if self.verbose {
             cmd_args.push("--verbose");
         }
@@ -94,36 +109,49 @@ impl TestCommand {
         } else if self.integration && !self.unit {
             cmd_args.push("--test");
         }
-        
-        println!("{} Executing: cargo {}", style("[3/4]").bold().dim(), cmd_args.join(" "));
-        
+
+        println!(
+            "{} Executing: cargo {}",
+            style("[3/4]").bold().dim(),
+            cmd_args.join(" ")
+        );
+
         // Execute the cargo test command
         let status = Command::new("cargo")
             .args(&cmd_args)
             .current_dir(&project_dir)
             .status();
-            
+
         match status {
             Ok(exit_status) => {
                 if exit_status.success() {
-                    println!("\n{} {}", 
-                        style("✅ Success:").green().bold(), 
-                        style("All tests passed!").bold());
+                    println!(
+                        "\n{} {}",
+                        style("✅ Success:").green().bold(),
+                        style("All tests passed!").bold()
+                    );
                 } else {
-                    println!("\n{} {}", 
-                        style("❌ Error:").red().bold(), 
-                        style("Some tests failed.").bold());
+                    println!(
+                        "\n{} {}",
+                        style("❌ Error:").red().bold(),
+                        style("Some tests failed.").bold()
+                    );
                 }
-            },
+            }
             Err(e) => {
-                println!("\n{} Failed to execute cargo test: {}", 
-                    style("❌ Error:").red().bold(), e);
+                println!(
+                    "\n{} Failed to execute cargo test: {}",
+                    style("❌ Error:").red().bold(),
+                    e
+                );
             }
         }
-        
-        println!("\n{} {}", 
+
+        println!(
+            "\n{} {}",
             style("[4/4]").bold().dim(),
-            style("For more information on testing strategies, see:").italic());
+            style("For more information on testing strategies, see:").italic()
+        );
         println!("    https://docs.orbitrs.dev/guides/testing-strategies");
 
         // Return Ok to indicate command executed successfully
@@ -174,11 +202,11 @@ mod tests {
             verbose: true,
             project_dir: None,
         };
-        
+
         // This is a way to test the command building without actually running commands
         // Extract the command args building logic to a separate method to make it testable
         let args = build_test_command_args(&cmd);
-        
+
         assert!(args.contains(&"test"));
         assert!(args.contains(&"--verbose"));
         assert!(args.contains(&"--lib"));
@@ -189,7 +217,7 @@ mod tests {
     #[cfg(test)]
     fn build_test_command_args(cmd: &TestCommand) -> Vec<&'static str> {
         let mut args = vec!["test"];
-        
+
         if cmd.verbose {
             args.push("--verbose");
         }
@@ -199,7 +227,7 @@ mod tests {
         } else if cmd.integration && !cmd.unit {
             args.push("--test");
         }
-        
+
         args
     }
 }
