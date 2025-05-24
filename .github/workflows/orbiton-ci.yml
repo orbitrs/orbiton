@@ -1,0 +1,124 @@
+name: Orbiton CLI CI
+
+# Crate-specific CI for orbiton CLI tool
+# Focuses on CLI functionality and binary artifacts
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'orbiton/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'orbiton/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  cli-tests:
+    name: CLI Functionality Tests
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install system dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfontconfig1-dev libfreetype6-dev
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: . -> target
+          cache-on-failure: true
+
+      - name: Build orbiton CLI
+        working-directory: orbiton
+        run: cargo build --release
+
+      - name: Run orbiton tests
+        working-directory: orbiton
+        run: |
+          cargo test --all-features
+          cargo test --doc
+
+      - name: Test CLI commands
+        working-directory: orbiton
+        run: |
+          # Test basic CLI functionality
+          cargo run -- --help
+          cargo run -- --version
+
+          # Test project creation in a temporary directory
+          cd "${{ runner.temp }}"
+          ../orbiton/target/release/orbiton new test-project --template basic
+          cd test-project
+          
+          # Verify the created project can build
+          cargo check
+          
+          # Test other CLI commands
+          ../../orbiton/target/release/orbiton build --help
+          ../../orbiton/target/release/orbiton dev --help
+
+  cli-integration:
+    name: CLI Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfontconfig1-dev libfreetype6-dev
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: . -> target
+          cache-on-failure: true
+
+      - name: Test orbiton with example projects
+        run: |
+          cd orbiton
+          cargo build --release
+          
+          # Test with each template
+          for template in basic component-library; do
+            echo "Testing template: $template"
+            cd "${{ runner.temp }}"
+            ../orbiton/target/release/orbiton new "test-$template" --template "$template"
+            cd "test-$template"
+            
+            # Verify project builds
+            cargo check
+            cargo test
+            
+            # Clean up
+            cd ..
+            rm -rf "test-$template"
+          done
