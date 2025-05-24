@@ -90,7 +90,8 @@ pub fn execute(args: BuildArgs) -> Result<()> {
     );
 
     // Create output directory if it doesn't exist
-    if !output_dir.exists() {        std::fs::create_dir_all(&output_dir)
+    if !output_dir.exists() {
+        std::fs::create_dir_all(&output_dir)
             .with_context(|| format!("Failed to create output directory: {output_dir:?}"))?;
     }
 
@@ -128,7 +129,8 @@ impl BuildProgress {
                 .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {msg} ({eta})")
                 .expect("Failed to set progress bar style")
                 .progress_chars("#>-"),
-        );        progress_bar.set_message(format!("Building for {target}"));
+        );
+        progress_bar.set_message(format!("Building for {target}"));
         Self { progress_bar }
     }
 
