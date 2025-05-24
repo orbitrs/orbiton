@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved error messages and handling
 - Enhanced project templates with better documentation
 - Configuration file handling with validation
+- CI/CD pipeline compatibility with multi-target builds
+- WASM build process with proper feature flag handling
 
 ## [0.1.0] - 2025-05-21
 - Initial public release

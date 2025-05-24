@@ -13,9 +13,9 @@ default = ["local-dependencies"]
 local-dependencies = []
 ci = []
 
-[dependencies]
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 # Core dependencies
-orbit = { path = "../orbit" }
+orbit = { path = "../orbit", default-features = false, features = ["desktop"] }
 orlint = { path = "../orlint" }
 
 # CLI libraries
@@ -53,6 +53,19 @@ open = "5.0.0"
 
 # Testing
 tempfile = "3.8.0"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+# Core dependencies (WASM compatible only)
+orbit = { path = "../orbit", default-features = false, features = ["web"] }
+# Note: orlint is excluded from WASM builds as it's a desktop-only tool
+
+# Basic libraries (WASM compatible)
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+log = "0.4"
+anyhow = "1.0.75"
+
+# Note: Most CLI and system libraries excluded from WASM builds
 
 [[bin]]
 name = "orbiton"
