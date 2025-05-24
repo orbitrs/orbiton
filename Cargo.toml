@@ -15,7 +15,7 @@ ci = []
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 # Core dependencies
-orbit = { path = "../orbit", default-features = false, features = ["desktop"] }
+orbit = { path = "../orbit", default-features = false }
 orlint = { path = "../orlint" }
 
 # CLI libraries
