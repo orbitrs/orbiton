@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Development server with auto-refresh (`orbiton dev`)
 - Build command with output optimization (`orbiton build`)
 - Integration with orlint for linting
+- **Configuration system with .orbiton.toml support**
+- **HMR (Hot Module Reload) system with timestamp-based cleanup**
+- **Maintenance command for project cleanup operations**
+- **Enhanced development server with configuration integration**
+- **Comprehensive integration tests for all core functionality**
 
 ### Fixed
 - Improved error messages and handling
@@ -20,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configuration file handling with validation
 - CI/CD pipeline compatibility with multi-target builds
 - WASM build process with proper feature flag handling
+- **Resolved all compiler warnings through proper code usage patterns**
+- **Fixed dead code warnings with appropriate allow annotations**
 
 ## [0.1.0] - 2025-05-21
 - Initial public release
