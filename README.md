@@ -19,14 +19,15 @@ Whether you're scaffolding a new component, starting a development server, or co
 
 ### 🔧 Features
 
-* 📁 Project scaffolding: `orbiton new`
-* ⚡ Dev server with hot reload: `orbiton dev`
-* 🛠️ Build pipeline for WASM, native, and embedded: `orbiton build`
-* 🚀 Deployment assistance: `orbiton deploy` (or extended `build`)
-* 📊 Performance profiler: `orbiton profile`
-* 🎨 Renderer configuration: `orbiton renderer` (Skia/WGPU/Auto)
-* 🧪 Component test utilities (planned)
-* 🔍 Analyzer integration: `orbiton lint` (via [orlint](https://github.com/orbitrs/orlint))
+* 📁 **Project scaffolding**: `orbiton new` - Bootstrap new Orbit projects
+* ⚡ **Dev server with HMR**: `orbiton dev` - Hot Module Reload for rapid development  
+* 🛠️ **Multi-target builds**: `orbiton build` - WASM, native, and embedded compilation
+* 🚀 **Deployment tools**: `orbiton deploy` - Streamlined deployment workflows
+* 📊 **Performance profiling**: `orbiton profile` - Analyze and optimize performance
+* 🎨 **Renderer configuration**: `orbiton renderer` - Skia/WGPU/Auto backend selection
+* 🧪 **Testing utilities**: Component and integration testing (planned)
+* 🔍 **Static analysis**: `orbiton lint` - Code quality via [orlint](https://github.com/orbitrs/orlint)
+* 🔄 **Beta toolchain support**: Optional Rust beta feature testing
 
 ---
 
@@ -85,6 +86,45 @@ orbiton generate                    # Generate components, services, or stores
 orbiton renderer --config skia      # Configure default renderer to Skia
 orbiton renderer --config wgpu      # Configure default renderer to WGPU
 orbiton renderer --config auto      # Configure automatic renderer selection
+```
+
+---
+
+### ⚡ Hot Module Reload (HMR)
+
+The development server includes a full Hot Module Reload implementation that allows for rapid development without full page reloads. Key features include:
+
+* **Intelligent Rebuilds**: Only rebuilds when necessary, with proper debouncing
+* **Live Updates**: Real-time feedback on build success/failure
+* **Beta Toolchain Support**: Opt-in testing with the latest Rust beta features
+
+#### Using HMR
+
+To start the development server with HMR:
+
+```bash
+# Basic usage
+orbiton dev
+
+# With beta toolchain
+orbiton dev --beta
+
+# Custom port
+orbiton dev --port 9000
+```
+
+#### HMR Client Integration
+
+For custom applications, you can register an HMR handler to enable surgical updates without a full page reload:
+
+```javascript
+// Register an HMR handler function that will be called when modules are updated
+window.__ORBIT_REGISTER_HMR_HANDLER(function(modules) {
+  console.log("Updated modules:", modules);
+  
+  // Your custom update logic here
+  // For example, you might want to re-render specific components
+});
 ```
 
 ---

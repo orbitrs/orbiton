@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbit Framework - HMR Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .log {
+            background-color: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Orbit Framework HMR Test</h1>
+        
+        <div id="connection-status" class="status disconnected">
+            Connecting to HMR server...
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Content</h3>
+            <p>This is a test page for the Orbit Framework Hot Module Reload system.</p>
+            <p>When you save changes to Rust files in your project, you should see:</p>
+            <ul>
+                <li>File change notifications</li>
+                <li>Build status updates</li>
+                <li>HMR updates for affected modules</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h3>HMR Log</h3>
+            <div id="hmr-log" class="log">Waiting for HMR events...</div>
+        </div>
+    </div>
+
+    <script>
+        // Custom HMR handler for this test page
+        let logElement = document.getElementById('hmr-log');
+        let statusElement = document.getElementById('connection-status');
+        
+        function addLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.innerHTML += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        // Register our custom HMR handler
+        window.__ORBIT_REGISTER_HMR_HANDLER(function(modules) {
+            addLog(`HMR Update received for modules: ${modules.join(', ')}`);
+            
+            // Simulate some component update logic
+            modules.forEach(module => {
+                addLog(`Applying update for module: ${module}`);
+            });
+            
+            addLog('HMR update completed successfully!');
+            return Promise.resolve();
+        });
+        
+        // Monitor connection status
+        function updateConnectionStatus() {
+            // This will be updated by the HMR client
+            setTimeout(() => {
+                statusElement.textContent = 'Connected to HMR server';
+                statusElement.className = 'status connected';
+                addLog('HMR client initialized and connected');
+            }, 1000);
+        }
+        
+        // Override console.info to capture HMR logs
+        const originalConsoleInfo = console.info;
+        console.info = function(...args) {
+            if (args[0] && args[0].startsWith('[Orbit HMR]')) {
+                addLog(args.join(' '));
+            }
+            originalConsoleInfo.apply(console, args);
+        };
+        
+        updateConnectionStatus();
+        addLog('Test page loaded, waiting for HMR events...');
+    </script>
+</body>
+</html>

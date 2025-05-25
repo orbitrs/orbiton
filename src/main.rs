@@ -5,8 +5,12 @@ use console::style;
 use log::info;
 
 mod commands;
+mod config;
 mod dev_server;
+mod hmr;
+mod hmr_inject;
 mod templates;
+mod test_hmr_module;
 mod utils;
 
 /// Version of the orbiton CLI
