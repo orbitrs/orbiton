@@ -35,10 +35,7 @@ fn main() {
 
     // Check if templates directory exists
     if !templates_dir.exists() {
-        println!(
-            "cargo:warning=Templates directory does not exist: {:?}",
-            templates_dir
-        );
+        println!("cargo:warning=Templates directory does not exist: {templates_dir:?}");
     }
 
     // Calculate target templates directory (parallel to executable)
@@ -55,18 +52,15 @@ fn main() {
 
     // Create target templates directory
     match fs::create_dir_all(&target_templates_dir) {
-        Ok(_) => println!(
-            "cargo:warning=Created templates directory: {:?}",
-            target_templates_dir
-        ),
-        Err(e) => println!("cargo:warning=Failed to create templates directory: {}", e),
+        Ok(_) => println!("cargo:warning=Created templates directory: {target_templates_dir:?}"),
+        Err(e) => println!("cargo:warning=Failed to create templates directory: {e}"),
     }
 
     // Only copy templates if the source directory exists
     if templates_dir.exists() {
         // Copy templates recursively
         if let Err(e) = copy_dir_recursively(&templates_dir, &target_templates_dir) {
-            println!("cargo:warning=Failed to copy templates: {}", e);
+            println!("cargo:warning=Failed to copy templates: {e}");
         }
     }
 }

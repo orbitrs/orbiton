@@ -103,7 +103,7 @@ impl TemplateManager {
         }
 
         for templates_dir in possible_dirs.iter() {
-            debug!("Checking for templates in {:?}", templates_dir);
+            debug!("Checking for templates in {templates_dir:?}");
             if templates_dir.exists() {
                 return Ok(Self {
                     templates_dir: templates_dir.clone(),
@@ -115,7 +115,7 @@ impl TemplateManager {
             "Templates directory not found. Make sure the template files are properly installed. Looked in:\n{}",
             possible_dirs
                 .iter()
-                .map(|p| format!("- {:?}", p))
+                .map(|p| format!("- {p:?}"))
                 .collect::<Vec<_>>()
                 .join("\n")
         ))
@@ -138,13 +138,12 @@ impl TemplateManager {
         let template_dir = self.templates_dir.join(template_type.to_string());
         if !template_dir.exists() {
             return Err(anyhow::anyhow!(
-                "Template directory not found: {:?}",
-                template_dir
+                "Template directory not found: {template_dir:?}"
             ));
         }
 
         let template_json = std::fs::read_to_string(template_dir.join("template.json"))
-            .with_context(|| format!("Failed to read template.json from {:?}", template_dir))?;
+            .with_context(|| format!("Failed to read template.json from {template_dir:?}"))?;
 
         let mut template: ProjectTemplate =
             serde_json::from_str(&template_json).context("Failed to parse template.json")?;
@@ -160,11 +159,11 @@ impl TemplateManager {
             let target_path = output_dir.join(&file.path);
             if let Some(parent) = target_path.parent() {
                 std::fs::create_dir_all(parent)
-                    .with_context(|| format!("Failed to create directory {:?}", parent))?;
+                    .with_context(|| format!("Failed to create directory {parent:?}"))?;
             }
 
             std::fs::write(&target_path, file.content)
-                .with_context(|| format!("Failed to write file: {:?}", target_path))?;
+                .with_context(|| format!("Failed to write file: {target_path:?}"))?;
         }
 
         Ok(())

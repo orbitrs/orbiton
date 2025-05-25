@@ -64,8 +64,7 @@ pub fn execute(args: BuildArgs) -> Result<()> {
     // Validate project directory
     if !project_dir.exists() {
         return Err(anyhow::anyhow!(
-            "Project directory does not exist: {:?}",
-            project_dir
+            "Project directory does not exist: {project_dir:?}"
         ));
     }
 
@@ -109,9 +108,8 @@ pub fn execute(args: BuildArgs) -> Result<()> {
     }
 
     println!(
-        "\n{} successful. Output at {:?}",
-        style("Build").bold().green(),
-        output_dir
+        "\n{} successful. Output at {output_dir:?}",
+        style("Build").bold().green()
     );
 
     Ok(())

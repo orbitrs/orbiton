@@ -48,10 +48,10 @@ pub fn execute(args: RendererArgs) -> Result<()> {
     // If the config file exists, read it; otherwise, create a new one
     let mut config = if config_file.exists() {
         let config_str = std::fs::read_to_string(&config_file)
-            .with_context(|| format!("Failed to read config file: {:?}", config_file))?;
+            .with_context(|| format!("Failed to read config file: {config_file:?}"))?;
 
         serde_json::from_str(&config_str)
-            .with_context(|| format!("Failed to parse config file: {:?}", config_file))?
+            .with_context(|| format!("Failed to parse config file: {config_file:?}"))?
     } else {
         serde_json::json!({})
     };
@@ -69,12 +69,11 @@ pub fn execute(args: RendererArgs) -> Result<()> {
         serde_json::to_string_pretty(&config).with_context(|| "Failed to serialize config")?;
 
     std::fs::write(&config_file, config_str)
-        .with_context(|| format!("Failed to write config file: {:?}", config_file))?;
+        .with_context(|| format!("Failed to write config file: {config_file:?}"))?;
 
     println!(
-        "Renderer configured to {} in {:?}",
-        style(renderer_type).bold(),
-        config_file
+        "Renderer configured to {} in {config_file:?}",
+        style(renderer_type).bold()
     );
 
     Ok(())

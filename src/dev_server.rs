@@ -64,16 +64,16 @@ impl DevServer {
                 let ws_handle = tokio::spawn(Self::run_websocket_server(port, ws_rx));
 
                 // Start HTTP server
-                let server = tiny_http::Server::http(format!("0.0.0.0:{}", port))
+                let server = tiny_http::Server::http(format!("0.0.0.0:{port}"))
                     .expect("Failed to start HTTP server");
 
-                info!("Development server started on port {}", port);
+                info!("Development server started on port {port}");
                 info!("WebSocket server started on port {}", port + 1);
 
                 let _broadcast_tx = tx; // Keep tx alive
 
                 for request in server.incoming_requests() {
-                    debug!("Received request: {:?}", request.url());
+                    debug!("Received request: {url:?}", url = request.url());
 
                     // Handle static files
                     let url = request.url().trim_start_matches('/');
@@ -119,7 +119,7 @@ impl DevServer {
         addr: SocketAddr,
         mut rx: broadcast::Receiver<String>,
     ) {
-        info!("WebSocket connection established: {}", addr);
+        info!("WebSocket connection established: {addr}");
         let (mut ws_sender, mut ws_receiver) = ws_stream.split();
 
         let send_task = tokio::spawn(async move {
@@ -127,7 +127,7 @@ impl DevServer {
                 ws_sender
                     .send(Message::Text(msg))
                     .await
-                    .unwrap_or_else(|e| error!("Error sending message: {}", e));
+                    .unwrap_or_else(|e| error!("Error sending message: {e}"));
             }
         });
 
@@ -143,7 +143,7 @@ impl DevServer {
         });
 
         future::select(send_task, recv_task).await;
-        info!("WebSocket connection closed: {}", addr);
+        info!("WebSocket connection closed: {addr}");
     }
 
     /// Start the WebSocket server

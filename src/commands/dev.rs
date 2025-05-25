@@ -33,9 +33,8 @@ pub fn execute(args: DevArgs) -> Result<()> {
     };
 
     println!(
-        "{} development server for project at {:?}",
-        style("Starting").bold().green(),
-        project_dir
+        "{} development server for project at {project_dir:?}",
+        style("Starting").bold().green()
     );
 
     // Create a development server
@@ -55,7 +54,7 @@ pub fn execute(args: DevArgs) -> Result<()> {
     // Open the browser if requested
     if args.open {
         if let Err(e) = open::that(format!("http://localhost:{}", args.port)) {
-            error!("Failed to open browser: {}", e);
+            error!("Failed to open browser: {e}");
         }
     }
 
@@ -89,10 +88,10 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
                 Ok(event) => {
                     // Handle file change event
                     if let Err(e) = tx.send(event) {
-                        error!("Failed to send file change event: {}", e);
+                        error!("Failed to send file change event: {e}");
                     }
                 }
-                Err(e) => error!("Watch error: {}", e),
+                Err(e) => error!("Watch error: {e}"),
             }
         })?;
 
@@ -105,7 +104,7 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
         let pdir = project_dir; // Create a new binding for the project directory
 
         for event in rx {
-            debug!("File change event: {:?}", event);
+            debug!("File change event: {event:?}");
 
             let paths = event
                 .paths
@@ -127,7 +126,7 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
             .to_string();
 
             if let Err(e) = server.broadcast_update(message) {
-                error!("Failed to broadcast file change: {}", e);
+                error!("Failed to broadcast file change: {e}");
             }
 
             // Determine if we should rebuild
@@ -150,7 +149,7 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
                 .to_string();
 
                 if let Err(e) = server.broadcast_update(message) {
-                    error!("Failed to broadcast rebuild start: {}", e);
+                    error!("Failed to broadcast rebuild start: {e}");
                 }
 
                 // Here we would trigger the actual rebuild
@@ -162,12 +161,12 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
                 .to_string();
 
                 if let Err(e) = server.broadcast_update(message) {
-                    error!("Failed to broadcast rebuild completion: {}", e);
+                    error!("Failed to broadcast rebuild completion: {e}");
                 }
             }
         }
     });
 
-    info!("File watching set up for {:?}", log_dir);
+    info!("File watching set up for {log_dir:?}");
     Ok(())
 }

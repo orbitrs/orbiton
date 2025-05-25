@@ -9,20 +9,20 @@ pub mod fs {
     /// Copy a directory recursively
     #[allow(dead_code)]
     pub fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<()> {
-        debug!("Copying directory from {:?} to {:?}", src, dst);
+        debug!("Copying directory from {src:?} to {dst:?}");
 
         // Create the destination directory if it doesn't exist
         if !dst.exists() {
             fs::create_dir_all(dst)
-                .with_context(|| format!("Failed to create directory: {:?}", dst))?;
+                .with_context(|| format!("Failed to create directory: {dst:?}"))?;
         }
 
         // Walk through the source directory
         for entry in
-            fs::read_dir(src).with_context(|| format!("Failed to read directory: {:?}", src))?
+            fs::read_dir(src).with_context(|| format!("Failed to read directory: {src:?}"))?
         {
             let entry =
-                entry.with_context(|| format!("Failed to read directory entry in: {:?}", src))?;
+                entry.with_context(|| format!("Failed to read directory entry in: {src:?}"))?;
 
             let src_path = entry.path();
             let dst_path = dst.join(entry.file_name());
@@ -33,7 +33,7 @@ pub mod fs {
             } else {
                 // Copy files
                 fs::copy(&src_path, &dst_path)
-                    .with_context(|| format!("Failed to copy {:?} to {:?}", src_path, dst_path))?;
+                    .with_context(|| format!("Failed to copy {src_path:?} to {dst_path:?}"))?;
             }
         }
 
@@ -51,7 +51,7 @@ pub mod fs {
 
         for entry in walkdir::WalkDir::new(dir) {
             let entry =
-                entry.with_context(|| format!("Failed to read directory entry in: {:?}", dir))?;
+                entry.with_context(|| format!("Failed to read directory entry in: {dir:?}"))?;
 
             let path = entry.path();
 
@@ -75,6 +75,6 @@ pub mod crypto {
             .expect("Time went backwards")
             .as_nanos();
 
-        format!("{:x}", now)
+        format!("{now:x}")
     }
 }

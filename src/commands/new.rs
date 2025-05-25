@@ -38,7 +38,7 @@ pub fn execute(args: NewArgs) -> Result<()> {
     // Determine the template to use
     let template_type = if let Some(template) = args.template {
         TemplateType::from_str(&template)
-            .with_context(|| format!("Invalid template type: {}", template))?
+            .with_context(|| format!("Invalid template type: {template}"))?
     } else {
         // Prompt the user to select a template
         let templates = template_manager.list_templates();
@@ -69,20 +69,19 @@ pub fn execute(args: NewArgs) -> Result<()> {
 
     // Create the output directory if it doesn't exist
     if !output_dir.exists() {
-        debug!("Creating output directory: {:?}", output_dir);
+        debug!("Creating output directory: {output_dir:?}");
         fs::create_dir_all(&output_dir)
-            .with_context(|| format!("Failed to create directory: {:?}", output_dir))?;
+            .with_context(|| format!("Failed to create directory: {output_dir:?}"))?;
     }
 
     // Generate the project from the template
     template_manager
         .generate_project(&args.name, template_type, &output_dir)
-        .with_context(|| format!("Failed to generate project in {:?}", output_dir))?;
+        .with_context(|| format!("Failed to generate project in {output_dir:?}"))?;
 
     println!(
-        "\n{} project created at {:?}",
-        style("Successfully").bold().green(),
-        output_dir
+        "\n{} project created at {output_dir:?}",
+        style("Successfully").bold().green()
     );
 
     // Print next steps
