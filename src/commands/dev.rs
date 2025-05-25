@@ -9,6 +9,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::config::OrbitonConfig;
 use crate::dev_server::DevServer;
 
 #[derive(Args)]
@@ -37,7 +38,21 @@ pub fn execute(args: DevArgs) -> Result<()> {
         None => std::env::current_dir()?,
     };
 
+    // Load configuration from .orbiton.toml or use defaults
+    let mut config = OrbitonConfig::load_from_project(&project_dir)?;
+
+    // Override config with command line arguments
+    if args.port != 8000 {
+        config.dev_server.port = args.port;
+    }
     if args.beta {
+        config.build.use_beta_toolchain = true;
+    }
+
+    // Validate the configuration
+    config.validate()?;
+
+    if config.build.use_beta_toolchain {
         println!(
             "{} development server with {} toolchain for project at {project_dir:?}",
             style("Starting").bold().green(),
@@ -48,10 +63,16 @@ pub fn execute(args: DevArgs) -> Result<()> {
             "{} development server for project at {project_dir:?}",
             style("Starting").bold().green()
         );
-    } // Create a development server
-    let mut server = DevServer::new_with_options(args.port, &project_dir, args.beta)?;
+    }
 
-    if args.beta {
+    // Create a development server using the configuration
+    let mut server = DevServer::new_with_options(
+        config.dev_server.port,
+        &project_dir,
+        config.build.use_beta_toolchain,
+    )?;
+
+    if config.build.use_beta_toolchain {
         // Verify beta toolchain is installed
         match std::process::Command::new("rustup")
             .args(["toolchain", "list"])
@@ -91,15 +112,16 @@ pub fn execute(args: DevArgs) -> Result<()> {
 
     println!(
         "Development server running at {}",
-        style(format!("http://localhost:{}", args.port))
+        style(format!("http://localhost:{}", config.dev_server.port))
             .bold()
             .blue()
             .underlined()
     );
 
-    // Open the browser if requested
-    if args.open {
-        if let Err(e) = open::that(format!("http://localhost:{}", args.port)) {
+    // Open the browser if requested (use config or CLI args)
+    let should_open = args.open || config.dev_server.auto_open;
+    if should_open {
+        if let Err(e) = open::that(format!("http://localhost:{}", config.dev_server.port)) {
             error!("Failed to open browser: {e}");
         }
     }
@@ -196,6 +218,13 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
         for event in rx {
             debug!("File change event: {event:?}");
 
+            // Check if enough time has passed since last rebuild for additional debouncing
+            let now = std::time::Instant::now();
+            if now.duration_since(last_rebuild) < DEBOUNCE_TIME {
+                debug!("Skipping event due to debounce (last rebuild too recent)");
+                continue;
+            }
+
             let paths = event
                 .paths
                 .iter()
@@ -231,9 +260,8 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
                     );
                 }
             }
-            // Determine if we should rebuild
+            // Determine if we should rebuild using HMR context debouncing
             let should_rebuild = hmr_context.should_rebuild(DEBOUNCE_TIME);
-            let now = std::time::Instant::now();
 
             if should_rebuild {
                 last_rebuild = now;
@@ -243,16 +271,12 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
                     style("Rebuilding").bold().yellow()
                 );
 
-                // Send rebuild event to clients
-                let message = serde_json::json!({
-                    "type": "rebuild",
-                    "status": "started"
-                })
-                .to_string();
+                // Send rebuild start notification using dev server method
+                if let Err(e) = server.send_rebuild_status("started") {
+                    error!("Failed to send rebuild start status: {e}");
+                }
 
-                if let Err(e) = server.broadcast_update(message) {
-                    error!("Failed to broadcast rebuild start: {e}");
-                } // Perform the actual rebuild
+                // Perform the actual rebuild
                 let rebuild_status = rebuild_project(&pdir, server.is_using_beta());
 
                 // Report the rebuild status
@@ -271,16 +295,11 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
                     }
                 );
 
-                // Send the rebuild status to clients
-                let message = serde_json::json!({
-                    "type": "rebuild",
-                    "status": status
-                })
-                .to_string();
-
-                if let Err(e) = server.broadcast_update(message) {
-                    error!("Failed to broadcast rebuild status: {e}");
+                // Send the rebuild status using dev server method
+                if let Err(e) = server.send_rebuild_status(status) {
+                    error!("Failed to send rebuild status: {e}");
                 }
+
                 // If rebuild succeeded, record the rebuild and send HMR updates
                 if rebuild_status {
                     // Record successful rebuild
@@ -297,16 +316,15 @@ fn setup_file_watching(project_dir: &Path, server: &DevServer) -> Result<()> {
                             style(affected_modules.join(", ")).italic()
                         );
 
-                        // Send HMR update message
-                        let hmr_message = serde_json::json!({
-                            "type": "hmr",
-                            "modules": affected_modules
-                        })
-                        .to_string();
-
-                        if let Err(e) = server.broadcast_update(hmr_message) {
+                        // Send HMR update using dev server method
+                        if let Err(e) = server.send_hmr_update(affected_modules) {
                             error!("Failed to send HMR update: {e}");
                         }
+                    }
+                } else {
+                    // On rebuild failure, send reload command to refresh the page
+                    if let Err(e) = server.send_reload_command() {
+                        error!("Failed to send reload command: {e}");
                     }
                 }
             }

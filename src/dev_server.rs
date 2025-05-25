@@ -48,6 +48,7 @@ impl Clone for DevServer {
 
 impl DevServer {
     /// Create a new development server
+    #[allow(dead_code)] // Used in tests and maintenance operations
     pub fn new(port: u16, project_dir: &Path) -> Result<Self> {
         let (tx, _) = broadcast::channel(16);
         let hmr_context = Arc::new(HmrContext::new(project_dir.to_owned()));
@@ -80,6 +81,12 @@ impl DevServer {
     /// Check if the dev server is using beta toolchain
     pub fn is_using_beta(&self) -> bool {
         self.use_beta
+    }
+
+    /// Get the server port
+    #[allow(dead_code)] // Used in tests and maintenance operations
+    pub fn port(&self) -> u16 {
+        self.port
     }
 
     /// Get the HMR context

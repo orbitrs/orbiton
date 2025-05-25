@@ -138,4 +138,30 @@ impl HmrContext {
         let mut modules = self.modules.lock().unwrap();
         modules.clear();
     }
+
+    /// Get the age of the oldest pending update
+    pub fn get_oldest_update_age(&self) -> Option<Duration> {
+        let modules = self.modules.lock().unwrap();
+        modules
+            .values()
+            .filter(|update| !update.is_updated)
+            .map(|update| update.timestamp.elapsed())
+            .max()
+    }
+
+    /// Get all updates that are older than the specified duration
+    pub fn get_stale_updates(&self, max_age: Duration) -> Vec<String> {
+        let modules = self.modules.lock().unwrap();
+        modules
+            .values()
+            .filter(|update| !update.is_updated && update.timestamp.elapsed() > max_age)
+            .map(|update| update.module.clone())
+            .collect()
+    }
+
+    /// Force clear stale updates (useful for cleanup)
+    pub fn clear_stale_updates(&self, max_age: Duration) {
+        let mut modules = self.modules.lock().unwrap();
+        modules.retain(|_, update| update.is_updated || update.timestamp.elapsed() <= max_age);
+    }
 }

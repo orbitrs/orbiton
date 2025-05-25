@@ -9,6 +9,9 @@ mod config;
 mod dev_server;
 mod hmr;
 mod hmr_inject;
+#[cfg(test)]
+mod integration_tests;
+mod maintenance;
 mod templates;
 mod test_hmr_module;
 mod utils;
@@ -43,9 +46,14 @@ enum Commands {
 
     /// Configure the renderer
     Renderer(commands::renderer::RendererArgs),
-
     /// Run tests for the project
     Test(commands::test::TestCommand),
+
+    /// Manage configuration
+    Config(commands::config::ConfigArgs),
+
+    /// Perform maintenance operations
+    Maintenance(commands::maintenance::MaintenanceArgs),
 }
 
 fn main() -> anyhow::Result<()> {
@@ -79,8 +87,25 @@ fn main() -> anyhow::Result<()> {
         Commands::Test(args) => {
             args.execute()?;
         }
+        Commands::Config(args) => {
+            commands::config::execute(args)?;
+        }
+        Commands::Maintenance(args) => {
+            commands::maintenance::execute(args)?;
+        }
     }
-
     info!("Command completed successfully");
     Ok(())
+}
+
+/// Print version information and available commands
+#[allow(dead_code)] // Utility function for help/documentation
+pub fn show_help_info() {
+    println!("Available commands:");
+    println!("  new         - Create a new Orbit project");
+    println!("  dev         - Start development server");
+    println!("  build       - Build project");
+    println!("  test        - Run tests");
+    println!("  config      - Manage configuration");
+    println!("  maintenance - Perform maintenance operations");
 }
