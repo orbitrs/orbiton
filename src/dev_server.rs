@@ -147,7 +147,7 @@ impl DevServer {
                     if file_path.exists() && file_path.is_file() {
                         // Special handling for HTML files to inject HMR client
                         if is_html_file(&file_path) {
-                            debug!("Processing HTML file: {file_path:?}");
+                            debug!("Processing HTML file: {:?}", file_path);
                             match process_html_file(&file_path, port) {
                                 Ok(content) => {
                                     let response = tiny_http::Response::from_data(content)
@@ -161,7 +161,7 @@ impl DevServer {
                                     let _ = request.respond(response);
                                 }
                                 Err(e) => {
-                                    error!("Failed to process HTML file: {e}");
+                                    error!("Failed to process HTML file: {}", e);
                                     // Fall back to serving the file without injection
                                     let file = std::fs::File::open(&file_path)
                                         .expect("Failed to open file");
@@ -278,14 +278,14 @@ impl DevServer {
                                     "register" => {
                                         if let Some(path) = json.get("url").and_then(|p| p.as_str())
                                         {
-                                            debug!("Client registered for path: {path}");
+                                            debug!("Client registered for path: {}", path);
                                             // Could store client info in a map for targeted updates
                                         }
                                     }
                                     "hmr_ready" => {
                                         debug!("Client reported HMR ready state");
                                     }
-                                    _ => debug!("Received unknown message type: {msg_type}"),
+                                    _ => debug!("Received unknown message type: {}", msg_type),
                                 }
                             }
                         }
