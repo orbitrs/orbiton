@@ -8,7 +8,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 /// Main configuration structure for Orbiton
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct OrbitonConfig {
     /// Project configuration
     #[serde(default)]
@@ -102,7 +102,7 @@ pub struct HmrConfig {
     pub show_notifications: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct BuildConfig {
     /// Whether to use beta Rust toolchain (default: false)
     #[serde(default)]
@@ -218,36 +218,12 @@ impl Default for HmrConfig {
     }
 }
 
-impl Default for BuildConfig {
-    fn default() -> Self {
-        Self {
-            use_beta_toolchain: false,
-            release: false,
-            target: None,
-            features: vec![],
-            opt_level: None,
-        }
-    }
-}
-
 impl Default for LintConfig {
     fn default() -> Self {
         Self {
             enabled: default_lint_enabled(),
             rules: HashMap::new(),
             custom_rules: vec![],
-        }
-    }
-}
-
-impl Default for OrbitonConfig {
-    fn default() -> Self {
-        Self {
-            project: ProjectConfig::default(),
-            dev_server: DevServerConfig::default(),
-            hmr: HmrConfig::default(),
-            build: BuildConfig::default(),
-            lint: LintConfig::default(),
         }
     }
 }

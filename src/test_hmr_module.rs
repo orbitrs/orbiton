@@ -18,7 +18,7 @@ impl TestComponent {
 
     pub fn update(&mut self, new_value: i32) {
         self.value = new_value;
-        println!("Component updated with value: {}", new_value);
+        println!("Component updated with value: {new_value}");
     }
 
     pub fn render(&self) -> String {

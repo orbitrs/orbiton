@@ -162,7 +162,7 @@ fn rebuild_project(project_dir: &Path, use_beta: bool) -> bool {
         .current_dir(project_dir);
 
     // Execute the build command
-    debug!("Running build command: {:?}", command);
+    debug!("Running build command: {command:?}");
 
     match command.status() {
         Ok(status) => {
@@ -170,12 +170,12 @@ fn rebuild_project(project_dir: &Path, use_beta: bool) -> bool {
                 info!("Project rebuilt successfully");
                 true
             } else {
-                error!("Project rebuild failed with status: {}", status);
+                error!("Project rebuild failed with status: {status}");
                 false
             }
         }
         Err(e) => {
-            error!("Failed to execute build command: {}", e);
+            error!("Failed to execute build command: {e}");
             false
         }
     }

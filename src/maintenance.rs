@@ -30,7 +30,7 @@ impl MaintenanceManager {
 
     /// Perform cleanup of stale HMR updates
     pub fn cleanup_stale_updates(&self, max_age: Duration) {
-        info!("Cleaning up stale HMR updates older than {:?}", max_age);
+        info!("Cleaning up stale HMR updates older than {max_age:?}");
 
         let stale_modules = self.hmr_context.get_stale_updates(max_age);
         if !stale_modules.is_empty() {
@@ -89,7 +89,7 @@ impl MaintenanceManager {
         port: u16,
         project_dir: &Path,
     ) -> anyhow::Result<DevServer> {
-        info!("Creating simple development server on port {}", port);
+        info!("Creating simple development server on port {port}");
         DevServer::new(port, project_dir)
     }
     /// Perform automated maintenance based on configuration
@@ -110,8 +110,7 @@ impl MaintenanceManager {
         let pending_count = self.hmr_context.get_pending_updates().len();
         if pending_count > 10 {
             warn!(
-                "High number of pending updates ({}), consider restarting the dev server",
-                pending_count
+                "High number of pending updates ({pending_count}), consider restarting the dev server"
             );
 
             println!(
@@ -142,7 +141,7 @@ impl MaintenanceManager {
             println!("  Modules: {}", pending_updates.join(", "));
 
             if let Some(oldest_age) = self.hmr_context.get_oldest_update_age() {
-                println!("  Oldest update: {:?} ago", oldest_age);
+                println!("  Oldest update: {oldest_age:?} ago");
             }
         }
 

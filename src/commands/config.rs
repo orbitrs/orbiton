@@ -154,7 +154,7 @@ fn validate_config(dir: Option<PathBuf>) -> Result<()> {
                 "{} Configuration validation failed:",
                 style("Error:").bold().red()
             );
-            println!("  {}", e);
+            println!("  {e}");
             return Err(e);
         }
     }

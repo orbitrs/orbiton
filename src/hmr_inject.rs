@@ -42,7 +42,7 @@ pub fn inject_hmr_client(html_content: &str, _port: u16) -> Result<String> {
         );
 
         // Inject the script
-        let injected_html = format!("{}{}{}", before, script, after);
+        let injected_html = format!("{before}{script}{after}");
         debug!("HMR client code injected successfully");
 
         Ok(injected_html)
@@ -56,7 +56,7 @@ pub fn inject_hmr_client(html_content: &str, _port: u16) -> Result<String> {
                 .unwrap_or_default()
                 .as_secs()
         );
-        let injected_html = format!("{}{}", html_content, script);
+        let injected_html = format!("{html_content}{script}");
 
         Ok(injected_html)
     }
@@ -69,7 +69,7 @@ pub fn get_hmr_client_js() -> &'static str {
 
 /// Process HTML file and inject HMR client code
 pub fn process_html_file(path: &Path, port: u16) -> Result<Vec<u8>> {
-    debug!("Processing HTML file: {:?}", path);
+    debug!("Processing HTML file: {path:?}");
 
     // Read HTML file content
     let mut file = std::fs::File::open(path)?;
